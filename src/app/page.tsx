@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { HeroSection } from "@/features/home/HeroSection";
 import { TrustBar } from "@/features/home/TrustBar";
 import { PresentationSection } from "@/features/home/PresentationSection";
 import { FeaturesSection } from "@/features/home/FeaturesSection";
 import { AdvantagesSection } from "@/features/home/AdvantagesSection";
 import { CTASection } from "@/features/shared/CTASection";
+import { softwareApplicationJsonLd, organizationJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "BluePay — Logiciel de Paie Marocain | SaaS CNSS AMO IR",
@@ -30,6 +32,20 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+      <Script
+        id="json-ld-software"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(softwareApplicationJsonLd()),
+        }}
+      />
+      <Script
+        id="json-ld-org"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationJsonLd()),
+        }}
+      />
       <HeroSection />
       <TrustBar />
       <PresentationSection />

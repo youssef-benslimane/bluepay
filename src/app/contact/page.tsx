@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Script from "next/script";
 import { Container } from "@/components/layout/Container";
 import { PageHero } from "@/features/shared/PageHero";
 import { ContactForm } from "@/features/contact/ContactForm";
 import { ContactInfo } from "@/features/contact/ContactInfo";
 import { MapEmbed } from "@/features/contact/MapEmbed";
 import { ContactPageClient } from "@/features/contact/ContactPageClient";
+import { contactPageJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Contactez-nous — Demande de Démo",
@@ -22,6 +24,11 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
+      <Script
+        id="json-ld-contact"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageJsonLd()) }}
+      />
       <PageHero
         badge="Contact"
         title="Parlons de votre projet"
