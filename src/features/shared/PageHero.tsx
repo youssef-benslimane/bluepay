@@ -29,16 +29,10 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "gradient-hero relative overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-28",
+        "relative overflow-hidden bg-white pt-32 pb-12 lg:pt-40 lg:pb-16 border-b border-border",
         className
       )}
     >
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute -left-20 bottom-0 h-60 w-60 rounded-full bg-secondary/10 blur-3xl" />
-      </div>
-
       <Container className="relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -49,22 +43,22 @@ export function PageHero({
           {breadcrumbs && (
             <nav
               aria-label="Breadcrumb"
-              className="flex items-center gap-1 text-sm text-white/60"
+              className="flex items-center gap-1 text-sm text-muted"
             >
               {breadcrumbs.map((crumb, i) => (
                 <span key={i} className="flex items-center gap-1">
                   {i > 0 && (
-                    <ChevronRight size={14} className="text-white/40" />
+                    <ChevronRight size={14} className="text-border-dark" />
                   )}
                   {crumb.href ? (
                     <Link
                       href={crumb.href}
-                      className="hover:text-white transition-colors"
+                      className="hover:text-primary transition-colors"
                     >
                       {crumb.label}
                     </Link>
                   ) : (
-                    <span className="text-white/90">{crumb.label}</span>
+                    <span className="text-dark font-medium">{crumb.label}</span>
                   )}
                 </span>
               ))}
@@ -72,17 +66,17 @@ export function PageHero({
           )}
 
           {badge && (
-            <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-medium text-white/90">
+            <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary">
               {badge}
             </span>
           )}
 
-          <h1 className="text-4xl font-bold tracking-tight text-white lg:text-5xl">
+          <h1 className="text-4xl font-bold tracking-tight text-dark lg:text-5xl">
             {title}
           </h1>
 
           {subtitle && (
-            <p className="max-w-2xl text-lg leading-relaxed text-white/75">
+            <p className="max-w-2xl text-lg leading-relaxed text-muted">
               {subtitle}
             </p>
           )}

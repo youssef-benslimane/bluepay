@@ -125,7 +125,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-2 border-t border-white/10 py-6 text-sm text-white/40 sm:flex-row">
           <p>© {year} BluePay. Tous droits réservés.</p>
           <p>
-            Solution de paie marocaine — CNSS, AMO, IR conformes
+            Solution de paie marocaine
           </p>
         </div>
       </Container>

@@ -15,14 +15,14 @@ const PROBLEMS_SOLVED = [
 
 const VALUE_PROPS = [
   {
-    title: "Inspiré des meilleurs systèmes",
-    description:
-      "BluePay s'inspire de la logique de paie et de la structuration des données des systèmes avancés comme SAP, tout en restant accessible.",
-  },
-  {
     title: "Interface intuitive",
     description:
       "Conçu pour les gestionnaires RH, sans compétences techniques requises. Interface fluide, accessible sur tablette et mobile.",
+  },
+  {
+    title: "Inspiré des meilleurs systèmes",
+    description:
+      "BluePay s'inspire de la logique de paie et de la structuration des données des systèmes avancés comme SAP, tout en restant accessible.",
   },
   {
     title: "Gestion RH complète",

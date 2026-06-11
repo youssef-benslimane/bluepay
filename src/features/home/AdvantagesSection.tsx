@@ -52,7 +52,7 @@ export function AdvantagesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex flex-col items-center gap-4 rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 to-secondary/5 p-8 text-center"
+                className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-white p-8 text-center [box-shadow:var(--shadow-card)]"
               >
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
                   {Icon && <Icon size={26} className="text-primary" />}

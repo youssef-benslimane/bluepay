@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,34 +35,19 @@ export function Navbar() {
     <header
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-300",
-        isScrolled
-          ? "bg-white/95 shadow-md backdrop-blur-md"
-          : "bg-transparent"
+        "bg-white/95 shadow-md backdrop-blur-md"
       )}
     >
       <Container>
         <nav className="flex h-16 items-center justify-between lg:h-20">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-2xl font-bold tracking-tight"
-          >
-            <span
-              className={cn(
-                "transition-colors duration-300",
-                isScrolled ? "text-primary" : "text-white"
-              )}
-            >
-              Blue
-            </span>
-            <span
-              className={cn(
-                "transition-colors duration-300",
-                isScrolled ? "text-dark" : "text-white/90"
-              )}
-            >
-              Pay
-            </span>
+          <Link href="/" className="flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="BluePay"
+              className="h-20 w-auto transition-all duration-300"
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -73,12 +59,8 @@ export function Navbar() {
                   className={cn(
                     "nav-link text-sm font-medium transition-colors duration-200",
                     pathname === link.href
-                      ? isScrolled
-                        ? "text-primary"
-                        : "text-white"
-                      : isScrolled
-                        ? "text-dark hover:text-primary"
-                        : "text-white/80 hover:text-white",
+                      ? "text-primary"
+                      : "text-dark hover:text-primary",
                     pathname === link.href && "active"
                   )}
                 >
@@ -92,10 +74,10 @@ export function Navbar() {
           <div className="hidden items-center gap-3 lg:flex">
             <Link href="/contact">
               <Button
-                variant={isScrolled ? "secondary" : "white"}
+                variant="secondary"
                 size="sm"
               >
-                Demander une démo
+                Nous contacter
               </Button>
             </Link>
           </div>
@@ -105,9 +87,7 @@ export function Navbar() {
             onClick={() => setMobileOpen(!mobileOpen)}
             className={cn(
               "flex h-10 w-10 items-center justify-center rounded-lg transition-colors lg:hidden",
-              isScrolled
-                ? "text-dark hover:bg-surface"
-                : "text-white hover:bg-white/10"
+              "text-dark hover:bg-surface"
             )}
             aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
           >
@@ -144,9 +124,9 @@ export function Navbar() {
                   </li>
                 ))}
                 <li className="pt-4">
-                  <Link href="/contact?demo=true" className="block">
+                  <Link href="/contact" className="block">
                     <Button variant="primary" size="md" className="w-full">
-                      Demander une démo
+                      Nous contacter
                     </Button>
                   </Link>
                 </li>

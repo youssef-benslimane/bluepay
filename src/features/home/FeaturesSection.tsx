@@ -16,7 +16,6 @@ import {
   Settings2,
 } from "lucide-react";
 import { Container } from "@/components/layout/Container";
-import { SectionTitle } from "@/components/ui/SectionTitle";
 import { FEATURES } from "@/data/features";
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -36,22 +35,8 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; className?: s
 
 export function FeaturesSection() {
   return (
-    <section id="fonctionnalites" className="section-alt py-20 lg:py-28">
+    <section id="fonctionnalites" className="py-16 lg:py-20">
       <Container>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-12 flex justify-center"
-        >
-          <SectionTitle
-            badge="Fonctionnalités"
-            title="Tout ce dont vous avez besoin"
-            subtitle="Un moteur de paie complet intégrant toutes les spécificités de la réglementation marocaine."
-          />
-        </motion.div>
-
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {FEATURES.map((feature, i) => {
             const Icon = iconMap[feature.icon];

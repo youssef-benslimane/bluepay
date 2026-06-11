@@ -43,7 +43,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     ],
     support: "Téléphone + Email (24h)",
     hosting: "Cloud SaaS ou On-Premise",
-    highlighted: true,
+    highlighted: false,
     ctaLabel: "Demander un devis",
   },
   {

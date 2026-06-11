@@ -11,14 +11,14 @@ import { Textarea } from "@/components/ui/Textarea";
 import { submitContactForm } from "@/services/contact";
 
 const schema = z.object({
+  prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   societe: z.string().optional(),
   telephone: z
     .string()
-    .regex(
-      /^(\+212|0)[5-7]\d{8}$/,
-      "Format attendu : 06XXXXXXXX ou +212XXXXXXXXX"
-    ),
+    .regex(/^(\+212|0)[5-7]\d{8}$/, "Format attendu : 06XXXXXXXX ou +212XXXXXXXXX")
+    .optional()
+    .or(z.literal("")),
   email: z.string().email("Email invalide"),
   message: z
     .string()
@@ -89,38 +89,45 @@ export function ContactForm({ defaultPlan }: ContactFormProps) {
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Input
-          label="Nom complet"
-          placeholder="Prénom Nom"
+          label="Prénom"
+          placeholder="Votre prénom"
+          required
+          error={errors.prenom?.message}
+          {...register("prenom")}
+        />
+        <Input
+          label="Nom"
+          placeholder="Votre nom"
           required
           error={errors.nom?.message}
           {...register("nom")}
         />
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Input
           label="Société"
           placeholder="Nom de votre entreprise"
           error={errors.societe?.message}
           {...register("societe")}
         />
-      </div>
-
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Input
           label="Téléphone"
           type="tel"
           placeholder="06XXXXXXXX"
-          required
           error={errors.telephone?.message}
           {...register("telephone")}
         />
-        <Input
-          label="Email professionnel"
-          type="email"
-          placeholder="vous@entreprise.ma"
-          required
-          error={errors.email?.message}
-          {...register("email")}
-        />
       </div>
+
+      <Input
+        label="Email professionnel"
+        type="email"
+        placeholder="vous@entreprise.ma"
+        required
+        error={errors.email?.message}
+        {...register("email")}
+      />
 
       <Textarea
         label="Votre message"

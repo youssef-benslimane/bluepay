@@ -74,9 +74,10 @@ export interface SimulatorResult {
 }
 
 export interface ContactFormData {
+  prenom: string;
   nom: string;
   societe?: string;
-  telephone: string;
+  telephone?: string;
   email: string;
   message: string;
   plan?: string;

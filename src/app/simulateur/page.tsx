@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { PageHero } from "@/features/shared/PageHero";
-import { CTASection } from "@/features/shared/CTASection";
 import { SimulatorTabsClient } from "@/features/simulator/SimulatorTabsClient";
 import { SimulatorBrutNet } from "@/features/simulator/SimulatorBrutNet";
 import { SimulatorNetBrut } from "@/features/simulator/SimulatorNetBrut";
@@ -25,10 +24,6 @@ export default function SimulateurPage() {
         badge="Simulateur"
         title="Simulateur de Paie"
         subtitle="Estimez votre salaire net ou calculez le brut correspondant. Simulation basée sur les taux CNSS, AMO et le barème IR marocain en vigueur."
-        breadcrumbs={[
-          { label: "Accueil", href: "/" },
-          { label: "Simulateur" },
-        ]}
       />
 
       <section className="py-20 lg:py-28">
@@ -40,12 +35,6 @@ export default function SimulateurPage() {
         </Container>
       </section>
 
-      <CTASection
-        title="Découvrez BluePay en action"
-        subtitle="Le simulateur vous donne un aperçu. BluePay gère l'intégralité de votre paie mensuelle — bulletins, déclarations et plus encore."
-        primaryLabel="Demander une démo"
-        primaryHref="/contact?demo=true"
-      />
     </>
   );
 }

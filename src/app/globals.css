@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand Colors */
-  --color-primary: #0066cc;
-  --color-primary-dark: #004499;
-  --color-primary-light: #3385d6;
-  --color-secondary: #0099e6;
-  --color-dark: #0a1628;
-  --color-dark-muted: #1e3a5f;
+  /* Brand Colors — Innovex/BluePay palette */
+  --color-primary: #1b7dbb;
+  --color-primary-dark: #155f94;
+  --color-primary-light: #3d96cc;
+  --color-secondary: #e8f4fb;
+  --color-dark: #111111;
+  --color-dark-muted: #333333;
 
   /* Neutral Colors */
-  --color-surface: #f8fafc;
-  --color-surface-dark: #f1f5f9;
-  --color-muted: #64748b;
-  --color-border: #e2e8f0;
-  --color-border-dark: #cbd5e1;
+  --color-surface: #f7f7f7;
+  --color-surface-dark: #eeeeee;
+  --color-muted: #555555;
+  --color-border: #e0e0e0;
+  --color-border-dark: #cccccc;
 
   /* Status Colors */
   --color-success: #10b981;
@@ -22,7 +22,7 @@
   --color-error: #ef4444;
 
   /* Font Family */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
 
   /* Font Sizes */
   --text-display: clamp(2.25rem, 5vw, 3.75rem);
@@ -38,7 +38,7 @@
 
   /* Shadows */
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
-  --shadow-card-hover: 0 10px 25px -3px rgb(0 102 204 / 0.12), 0 4px 6px -4px rgb(0 102 204 / 0.08);
+  --shadow-card-hover: 0 10px 25px -3px rgb(27 125 187 / 0.18), 0 4px 6px -4px rgb(27 125 187 / 0.12);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
@@ -56,24 +56,24 @@ html {
 
 body {
   background-color: #ffffff;
-  color: var(--color-dark);
+  color: #111111;
   font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Gradient utility classes */
+/* Gradient utility classes — matches Innovex BluePay gradients */
 .gradient-hero {
-  background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-dark-muted) 50%, #1a4080 100%);
+  background: linear-gradient(135deg, #2e2960 0%, #1b7dbb 100%);
 }
 
 .gradient-cta {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: linear-gradient(135deg, #2e2960 0%, #1b7dbb 100%);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-secondary), #60b8ff);
+  background: linear-gradient(135deg, #1b7dbb, #3d96cc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -102,7 +102,39 @@ body {
 
 /* Section alternation */
 .section-alt {
-  background-color: var(--color-surface);
+  background-color: #ffffff;
+}
+
+/* Primary button — matches Innovex .btn */
+.btn {
+  background: #1b7dbb;
+  color: white;
+  padding: 14px 25px;
+  font-size: 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+  background: #155f94;
+}
+
+/* Outline button */
+.btn-outline {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+}
+
+.btn-outline:hover {
+  background: white;
+  color: #1b7dbb;
 }
 
 /* Focus styles */

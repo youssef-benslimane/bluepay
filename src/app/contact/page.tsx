@@ -5,7 +5,6 @@ import { Container } from "@/components/layout/Container";
 import { PageHero } from "@/features/shared/PageHero";
 import { ContactForm } from "@/features/contact/ContactForm";
 import { ContactInfo } from "@/features/contact/ContactInfo";
-import { MapEmbed } from "@/features/contact/MapEmbed";
 import { ContactPageClient } from "@/features/contact/ContactPageClient";
 import { contactPageJsonLd } from "@/lib/jsonld";
 
@@ -33,16 +32,14 @@ export default function ContactPage() {
         badge="Contact"
         title="Parlons de votre projet"
         subtitle="Notre équipe vous accompagne dans la mise en place de BluePay et répond à toutes vos questions."
-        breadcrumbs={[{ label: "Accueil", href: "/" }, { label: "Contact" }]}
       />
 
       <section className="py-20 lg:py-28">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-            {/* Left: Info + Map */}
-            <div className="flex flex-col gap-8">
+          <div className="grid items-stretch gap-12 lg:grid-cols-2 lg:gap-16">
+            {/* Left: Info */}
+            <div className="rounded-2xl border border-border bg-white p-8 [box-shadow:var(--shadow-lg)]">
               <ContactInfo />
-              <MapEmbed />
             </div>
 
             {/* Right: Form */}

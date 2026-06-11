@@ -53,15 +53,17 @@ export function CTASection({
                 />
               </Button>
             </Link>
-            <Link href={secondaryHref}>
-              <Button
-                variant="ghost"
-                size="lg"
-                className="text-white hover:bg-white/10"
-              >
-                {secondaryLabel}
-              </Button>
-            </Link>
+            {secondaryLabel && (
+              <Link href={secondaryHref}>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="text-white hover:bg-white/10"
+                >
+                  {secondaryLabel}
+                </Button>
+              </Link>
+            )}
           </div>
         </motion.div>
       </Container>
