@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { PageHero } from "@/features/shared/PageHero";
 import { SimulatorTabsClient } from "@/features/simulator/SimulatorTabsClient";
-import { SimulatorBrutNet } from "@/features/simulator/SimulatorBrutNet";
-import { SimulatorNetBrut } from "@/features/simulator/SimulatorNetBrut";
 
 export const metadata: Metadata = {
   title: "Simulateur de Paie Marocain — CNSS, AMO, IR",
@@ -28,10 +26,7 @@ export default function SimulateurPage() {
 
       <section className="py-20 lg:py-28">
         <Container>
-          <SimulatorTabsClient
-            SimulatorBrutNet={SimulatorBrutNet}
-            SimulatorNetBrut={SimulatorNetBrut}
-          />
+          <SimulatorTabsClient />
         </Container>
       </section>
 

@@ -1,135 +1,433 @@
-import type {
-  SimulatorInputBrutNet,
-  SimulatorInputNetBrut,
-  SimulatorResult,
-} from "@/types";
+// ─── Types ─────────────────────────────────────────────────────────────────
 
-/**
- * Interface publique du moteur de calcul de paie.
- * Remplacer MockPayrollEngine par l'implémentation réelle lors de l'intégration.
- */
-export interface IPayrollEngine {
-  calculateBrutToNet(input: SimulatorInputBrutNet): SimulatorResult;
-  calculateNetToBrut(input: SimulatorInputNetBrut): SimulatorResult;
+export type SituationFamiliale = "C" | "M";
+export type TypeContrat =
+  | "CDI"
+  | "CDD"
+  | "ANAPEC_1"
+  | "ANAPEC_2"
+  | "ANAPEC_3"
+  | "TAHFIZ";
+export type ProduitCimr = "AL_KAMIL" | "AL_MOUNASSIB" | "TCNSS";
+
+export interface SimulationItem {
+  libelle: string;
+  montant: number;
+  cotisable: boolean;  // soumis CNSS/AMO/CIMR
+  imposable: boolean;  // soumis IR
 }
 
-/**
- * Taux en vigueur au Maroc (2024).
- * Source : CNSS, AMO, barème IR DGI.
- */
-const RATES = {
-  CNSS_SALARIE: 0.0448,
-  CNSS_PATRONAL: 0.2162,
-  AMO_SALARIE: 0.0226,
-  AMO_PATRONAL: 0.0223,
-  CNSS_PLAFOND: 6000,
-  ABATTEMENT_FRAIS_PRO: 0.2,
-  ABATTEMENT_FRAIS_PRO_MAX: 2500,
-  DEDUCTION_CNSS_MAX: 268.8,
-  DEDUCTION_AMO_MAX: 135.6,
-};
+export interface CimrConfig {
+  produit: ProduitCimr;
+  tauxSalarialOption: string; // e.g. "TAUX_3_00"
+}
 
-const IR_TRANCHES = [
-  { min: 0, max: 2500, taux: 0, deduction: 0 },
-  { min: 2500, max: 4166.67, taux: 0.1, deduction: 250 },
-  { min: 4166.67, max: 5000, taux: 0.2, deduction: 666.67 },
-  { min: 5000, max: 6666.67, taux: 0.3, deduction: 1166.67 },
-  { min: 6666.67, max: 15000, taux: 0.34, deduction: 1433.33 },
-  { min: 15000, max: Infinity, taux: 0.38, deduction: 2033.33 },
+export interface PayrollInput {
+  salaireBase: number;
+  tauxActivite?: number;             // %, default 100
+  typeContrat?: TypeContrat;         // default CDI
+  situationFamiliale?: SituationFamiliale; // default C
+  nombrePersonnesACharge?: number;   // default 0
+  retenuesBrute?: number;            // default 0
+  cimrConfig?: CimrConfig;
+  primes?: SimulationItem[];
+  avantages?: SimulationItem[];
+}
+
+export interface NetToGrossInput {
+  netCible: number;
+  tauxActivite?: number;
+  typeContrat?: TypeContrat;
+  situationFamiliale?: SituationFamiliale;
+  nombrePersonnesACharge?: number;
+  retenuesBrute?: number;
+  cimrConfig?: CimrConfig;
+  primes?: SimulationItem[];
+  avantages?: SimulationItem[];
+}
+
+export interface CotisationDetail {
+  code: string;
+  libelle: string;
+  base: number;
+  tauxSalarial: number;
+  montantSalarial: number;
+  tauxPatronal: number;
+  montantPatronal: number;
+}
+
+export interface PayrollResult {
+  salaireBase: number;
+  salaireBrutBase: number;
+  totalPrimes: number;
+  totalAvantages: number;
+  salaireBrut: number;
+  totalCotisationsSalariales: number;
+  totalCotisationsPatronales: number;
+  brutImposable: number;
+  fraisProfessionnels: number;
+  netImposable: number;
+  igr: number;
+  retenuesBrute: number;
+  netPayer: number;
+  totalDesCouts: number;
+  cotisationsDetails: CotisationDetail[];
+  tauxCIMRSalarial?: number;
+  tauxCIMRPatronal?: number;
+}
+
+// ─── Taux 2025 ──────────────────────────────────────────────────────────────
+
+const TAUX_CNSS_SALARIAL = 4.48;
+const TAUX_CNSS_PATRONAL = 16.98;
+const PLAFOND_CNSS = 6000;
+
+const TAUX_AMO_SALARIAL = 4.11;
+const TAUX_AMO_PATRONAL = 4.11;
+// AMO : pas de plafond (appliqué sur le brut global)
+
+// Barème IR annuel 2025 (Loi de Finances 2023-2025)
+const BAREME_IR = [
+  { min: 0,       max: 40000,   taux: 0,  deduction: 0     },
+  { min: 40000,   max: 60000,   taux: 10, deduction: 4000  },
+  { min: 60000,   max: 80000,   taux: 20, deduction: 10000 },
+  { min: 80000,   max: 100000,  taux: 30, deduction: 18000 },
+  { min: 100000,  max: 180000,  taux: 34, deduction: 22000 },
+  { min: 180000,  max: Infinity, taux: 38, deduction: 29200 },
 ];
 
-function getDeductionEnfants(nombreEnfants: number): number {
-  const capped = Math.min(nombreEnfants, 6);
-  return capped * 30;
+// tauxPatronal = tauxSalarial × 1.30
+const TAUX_CIMR_MAP: Record<string, { salarial: number; patronal: number }> = {
+  TAUX_3_00:  { salarial: 3.00,  patronal: 3.90  },
+  TAUX_3_75:  { salarial: 3.75,  patronal: 4.88  },
+  TAUX_4_50:  { salarial: 4.50,  patronal: 5.85  },
+  TAUX_5_25:  { salarial: 5.25,  patronal: 6.83  },
+  TAUX_6_00:  { salarial: 6.00,  patronal: 7.80  },
+  TAUX_7_00:  { salarial: 7.00,  patronal: 9.10  },
+  TAUX_7_50:  { salarial: 7.50,  patronal: 9.75  },
+  TAUX_8_00:  { salarial: 8.00,  patronal: 10.40 },
+  TAUX_8_50:  { salarial: 8.50,  patronal: 11.05 },
+  TAUX_9_00:  { salarial: 9.00,  patronal: 11.70 },
+  TAUX_9_50:  { salarial: 9.50,  patronal: 12.35 },
+  TAUX_10_00: { salarial: 10.00, patronal: 13.00 },
+  TAUX_11_00: { salarial: 11.00, patronal: 14.30 },
+  TAUX_12_00: { salarial: 12.00, patronal: 15.60 },
+};
+
+export const CIMR_OPTIONS_AL_KAMIL_TCNSS = Object.entries(TAUX_CIMR_MAP).map(
+  ([key, val]) => ({ key, ...val })
+);
+export const CIMR_OPTIONS_AL_MOUNASSIB = CIMR_OPTIONS_AL_KAMIL_TCNSS.filter(
+  (o) => o.salarial >= 6
+);
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function r2(n: number): number {
+  return Math.round(n * 100) / 100;
 }
 
-function calculateIR(
-  salaireNetImposable: number,
-  situationFamiliale: SimulatorInputBrutNet["situationFamiliale"],
-  nombreEnfants: number
+function sumMontants(items: SimulationItem[] | undefined): number {
+  return items?.reduce((s, i) => s + i.montant, 0) ?? 0;
+}
+
+function sumExonereCnssAmo(items: SimulationItem[] | undefined): number {
+  return (
+    items?.filter((i) => !i.cotisable).reduce((s, i) => s + i.montant, 0) ?? 0
+  );
+}
+
+function sumExonereIR(items: SimulationItem[] | undefined): number {
+  return (
+    items?.filter((i) => !i.imposable).reduce((s, i) => s + i.montant, 0) ?? 0
+  );
+}
+
+function fraisPro(brutImposable: number): number {
+  if (brutImposable <= 6500) return Math.min(r2(brutImposable * 0.35), 2500);
+  return Math.min(r2(brutImposable * 0.25), 2916.67);
+}
+
+function abattementFamilial(sf: SituationFamiliale, nbCharges: number): number {
+  const total = nbCharges + (sf === "M" ? 1 : 0);
+  return Math.min(total * 50, 300);
+}
+
+function calculateIGR(
+  netImposable: number,
+  sf: SituationFamiliale,
+  nbCharges: number
 ): number {
-  const mensuel = salaireNetImposable;
-  const tranche = IR_TRANCHES.find(
-    (t) => mensuel > t.min && mensuel <= t.max
-  ) ?? IR_TRANCHES[IR_TRANCHES.length - 1];
-
-  let ir = mensuel * tranche.taux - tranche.deduction;
-
-  const deductionChargeFamille =
-    situationFamiliale !== "celibataire" ? 30 : 0;
-  const deductionEnfants = getDeductionEnfants(nombreEnfants);
-
-  ir = Math.max(0, ir - deductionChargeFamille - deductionEnfants);
-
-  return Math.max(0, ir);
+  if (netImposable <= 0) return 0;
+  const annuel = netImposable * 12;
+  const tranche =
+    BAREME_IR.find((t) => annuel <= t.max) ?? BAREME_IR[BAREME_IR.length - 1];
+  const igrAnnuel = Math.max(
+    0,
+    r2((annuel * tranche.taux) / 100 - tranche.deduction)
+  );
+  const igrMensuel = r2(igrAnnuel / 12);
+  return Math.max(0, r2(igrMensuel - abattementFamilial(sf, nbCharges)));
 }
 
-/**
- * Implémentation mock — calculs approximatifs pour la démo.
- * À remplacer par le moteur de calcul réel de l'application BluePay.
- */
-export class MockPayrollEngine implements IPayrollEngine {
-  calculateBrutToNet(input: SimulatorInputBrutNet): SimulatorResult {
-    const { salaireBrut, situationFamiliale, nombreEnfants } = input;
+// Barème TAHFIZ mensuel direct (tranches mensuelles figées)
+function calculateTAHFIZIR(
+  sni: number,
+  sf: SituationFamiliale,
+  nbCharges: number
+): number {
+  if (sni <= 0) return 0;
+  let irBrut = 0;
+  if (sni <= 3333.33)      irBrut = 0;
+  else if (sni <= 4166.67) irBrut = r2(sni * 0.10 - 333.33);
+  else if (sni <= 5000)    irBrut = r2(sni * 0.20 - 750.0);
+  else if (sni <= 6666.67) irBrut = r2(sni * 0.30 - 1250.0);
+  else if (sni <= 15000)   irBrut = r2(sni * 0.34 - 1516.67);
+  else                     irBrut = r2(sni * 0.38 - 2116.67);
+  return Math.max(0, r2(irBrut - abattementFamilial(sf, nbCharges)));
+}
 
-    const cnss = Math.min(
-      salaireBrut * RATES.CNSS_SALARIE,
-      RATES.DEDUCTION_CNSS_MAX
-    );
+function getCimrTaux(cfg: CimrConfig): { salarial: number; patronal: number } | null {
+  return TAUX_CIMR_MAP[cfg.tauxSalarialOption] ?? null;
+}
 
-    const amo = Math.min(
-      salaireBrut * RATES.AMO_SALARIE,
-      RATES.DEDUCTION_AMO_MAX
-    );
+function cimrBase(brut: number, cfg: CimrConfig): number {
+  return cfg.produit === "AL_MOUNASSIB" ? Math.max(0, brut - PLAFOND_CNSS) : brut;
+}
 
-    const abattementFraisPro = Math.min(
-      salaireBrut * RATES.ABATTEMENT_FRAIS_PRO,
-      RATES.ABATTEMENT_FRAIS_PRO_MAX
-    );
+function cimrSalarialAmt(brut: number, cfg: CimrConfig): number {
+  const t = getCimrTaux(cfg);
+  if (!t) return 0;
+  return r2((cimrBase(brut, cfg) * t.salarial) / 100);
+}
 
-    const salaireNetImposable = salaireBrut - cnss - amo - abattementFraisPro;
+function cimrPatronalAmt(brut: number, cfg: CimrConfig): number {
+  const t = getCimrTaux(cfg);
+  if (!t) return 0;
+  return r2((cimrBase(brut, cfg) * t.patronal) / 100);
+}
 
-    const ir = calculateIR(salaireNetImposable, situationFamiliale, nombreEnfants);
+// ─── ANAPEC ─────────────────────────────────────────────────────────────────
 
-    const totalCotisations = cnss + amo + ir;
-    const salaireNet = salaireBrut - totalCotisations;
+function calculateANAPEC(
+  typeContrat: TypeContrat,
+  salaireBrut: number,
+  salaireBase: number,
+  salaireBrutBase: number,
+  totalPrimes: number,
+  totalAvantages: number,
+  retenuesBrute: number,
+  sf: SituationFamiliale,
+  nbCharges: number
+): PayrollResult {
+  const base: PayrollResult = {
+    salaireBase,
+    salaireBrutBase,
+    totalPrimes,
+    totalAvantages,
+    salaireBrut,
+    totalCotisationsSalariales: 0,
+    totalCotisationsPatronales: 0,
+    brutImposable: salaireBrut,
+    fraisProfessionnels: 0,
+    netImposable: salaireBrut,
+    igr: 0,
+    retenuesBrute,
+    netPayer: Math.max(0, salaireBrut),
+    totalDesCouts: salaireBrut,
+    cotisationsDetails: [],
+  };
 
-    return {
-      salaireBrut,
-      cnss,
-      amo,
-      ir,
-      salaireNet,
-      totalCotisations,
-      tauxEffectifIR: salaireBrut > 0 ? (ir / salaireBrut) * 100 : 0,
-    };
+  if (typeContrat === "ANAPEC_3") {
+    const assietteFP = salaireBrutBase + totalPrimes;
+    const fp = fraisPro(assietteFP);
+    const sni = salaireBrut - fp;
+    const igr = calculateIGR(sni, sf, nbCharges);
+    const net = Math.max(0, salaireBrut - igr - totalAvantages);
+    return { ...base, fraisProfessionnels: fp, netImposable: sni, igr, netPayer: net };
   }
 
-  calculateNetToBrut(input: SimulatorInputNetBrut): SimulatorResult {
-    const { salaireNet } = input;
+  return base; // ANAPEC_1 & ANAPEC_2 : exonérés totalement
+}
 
-    // Estimation itérative (brut ≈ net / (1 - taux_cotisations_approx))
-    let brutEstime = salaireNet / 0.8;
+// ─── TAHFIZ ─────────────────────────────────────────────────────────────────
 
-    for (let i = 0; i < 10; i++) {
-      const result = this.calculateBrutToNet({
-        salaireBrut: brutEstime,
-        situationFamiliale: "celibataire",
-        nombreEnfants: 0,
-        anciennete: 0,
-      });
-      const diff = salaireNet - result.salaireNet;
-      brutEstime += diff;
-      if (Math.abs(diff) < 0.01) break;
-    }
+function calculateTAHFIZ(
+  salaireBrut: number,
+  salaireBase: number,
+  salaireBrutBase: number,
+  totalPrimes: number,
+  totalAvantages: number,
+  retenuesBrute: number,
+  sf: SituationFamiliale,
+  nbCharges: number,
+  cimrConfig?: CimrConfig
+): PayrollResult {
+  // Salarial : CNSS + AMO sur le brut complet
+  const baseCNSSSal = Math.min(salaireBrut, PLAFOND_CNSS);
+  const cnssSal    = r2((baseCNSSSal * TAUX_CNSS_SALARIAL) / 100);
+  const amoSal     = r2((salaireBrut * TAUX_AMO_SALARIAL) / 100);
 
-    return this.calculateBrutToNet({
-      salaireBrut: Math.max(brutEstime, 0),
-      situationFamiliale: "celibataire",
-      nombreEnfants: 0,
-      anciennete: 0,
+  const cimrTaux = cimrConfig ? getCimrTaux(cimrConfig) : null;
+  const cimrSal  = cimrConfig && cimrTaux ? cimrSalarialAmt(salaireBrut, cimrConfig) : 0;
+  const cimrPat  = cimrConfig && cimrTaux ? cimrPatronalAmt(salaireBrut, cimrConfig) : 0;
+
+  const totalCotisationsSalariales = cnssSal + amoSal + cimrSal;
+
+  // Patronal : exonération sur les 10 000 premiers DH
+  const exonerationTAHFIZ = 10000;
+  const basePatronale = Math.max(0, salaireBrut - exonerationTAHFIZ);
+  const baseCNSSPat   = Math.min(basePatronale, PLAFOND_CNSS);
+  const cnssPat       = r2((baseCNSSPat * TAUX_CNSS_PATRONAL) / 100);
+  const amoPat        = r2((basePatronale * TAUX_AMO_PATRONAL) / 100);
+  const totalCotisationsPatronales = cnssPat + amoPat + cimrPat;
+
+  // Base IR TAHFIZ = max(0, brut - 10 000)
+  const sbi = Math.max(0, salaireBrut - exonerationTAHFIZ);
+  let fp = 0;
+  if (sbi > 0) {
+    const assietteFP = Math.max(0, sbi - totalAvantages);
+    fp = fraisPro(assietteFP);
+  }
+  const sni = Math.max(0, sbi - fp - totalCotisationsSalariales);
+  const igr = sni > 0 ? calculateTAHFIZIR(sni, sf, nbCharges) : 0;
+  const netPayer = Math.max(0, salaireBrut - totalCotisationsSalariales - igr - totalAvantages);
+
+  const salaireBrutOriginal = salaireBrutBase + totalPrimes + totalAvantages;
+  const totalDesCouts = r2(salaireBrutOriginal + totalCotisationsPatronales - totalAvantages);
+
+  const cotisationsDetails: CotisationDetail[] = [
+    { code: "CNSS", libelle: "Cotisation CNSS",
+      base: baseCNSSSal, tauxSalarial: TAUX_CNSS_SALARIAL, montantSalarial: cnssSal,
+      tauxPatronal: TAUX_CNSS_PATRONAL, montantPatronal: cnssPat },
+    { code: "AMO", libelle: "Cotisation AMO",
+      base: salaireBrut, tauxSalarial: TAUX_AMO_SALARIAL, montantSalarial: amoSal,
+      tauxPatronal: TAUX_AMO_PATRONAL, montantPatronal: amoPat },
+  ];
+  if (cimrConfig && cimrTaux) {
+    cotisationsDetails.push({
+      code: "CIMR", libelle: `CIMR ${cimrConfig.produit}`,
+      base: cimrBase(salaireBrut, cimrConfig),
+      tauxSalarial: cimrTaux.salarial, montantSalarial: cimrSal,
+      tauxPatronal: cimrTaux.patronal, montantPatronal: cimrPat,
     });
   }
+
+  return {
+    salaireBase, salaireBrutBase, totalPrimes, totalAvantages, salaireBrut,
+    totalCotisationsSalariales, totalCotisationsPatronales,
+    brutImposable: sbi, fraisProfessionnels: fp, netImposable: sni,
+    igr, retenuesBrute, netPayer, totalDesCouts, cotisationsDetails,
+    tauxCIMRSalarial: cimrTaux?.salarial, tauxCIMRPatronal: cimrTaux?.patronal,
+  };
 }
 
-export const payrollEngine: IPayrollEngine = new MockPayrollEngine();
+// ─── Standard CDI / CDD ──────────────────────────────────────────────────────
+
+function calculateGrossToNet(input: PayrollInput): PayrollResult {
+  const salaireBase    = input.salaireBase ?? 0;
+  const tauxActivite   = (input.tauxActivite ?? 100) / 100;
+  const typeContrat    = input.typeContrat ?? "CDI";
+  const sf             = input.situationFamiliale ?? "C";
+  const nbCharges      = input.nombrePersonnesACharge ?? 0;
+  const retenuesBrute  = input.retenuesBrute ?? 0;
+  const primes         = input.primes ?? [];
+  const avantages      = input.avantages ?? [];
+
+  const salaireBrutBase = r2(salaireBase * tauxActivite);
+  const totalPrimes     = r2(sumMontants(primes));
+  const totalAvantages  = r2(sumMontants(avantages));
+  const salaireBrut     = r2(salaireBrutBase + totalPrimes + totalAvantages - retenuesBrute);
+
+  if (typeContrat.startsWith("ANAPEC")) {
+    return calculateANAPEC(typeContrat, salaireBrut, salaireBase, salaireBrutBase,
+      totalPrimes, totalAvantages, retenuesBrute, sf, nbCharges);
+  }
+  if (typeContrat === "TAHFIZ") {
+    return calculateTAHFIZ(salaireBrut, salaireBase, salaireBrutBase,
+      totalPrimes, totalAvantages, retenuesBrute, sf, nbCharges, input.cimrConfig);
+  }
+
+  // ── Cotisables CNSS/AMO/CIMR
+  const exonereCnssAmo   = sumExonereCnssAmo(primes) + sumExonereCnssAmo(avantages);
+  const brutCotisable    = salaireBrut - exonereCnssAmo;
+
+  const baseCNSS    = Math.min(brutCotisable, PLAFOND_CNSS);
+  const cnssSal     = r2((baseCNSS * TAUX_CNSS_SALARIAL) / 100);
+  const cnssPat     = r2((baseCNSS * TAUX_CNSS_PATRONAL) / 100);
+
+  const amoSal      = r2((brutCotisable * TAUX_AMO_SALARIAL) / 100);
+  const amoPat      = r2((brutCotisable * TAUX_AMO_PATRONAL) / 100);
+
+  const cimrTaux    = input.cimrConfig ? getCimrTaux(input.cimrConfig) : null;
+  const cimrSal     = input.cimrConfig && cimrTaux ? cimrSalarialAmt(brutCotisable, input.cimrConfig) : 0;
+  const cimrPat     = input.cimrConfig && cimrTaux ? cimrPatronalAmt(brutCotisable, input.cimrConfig) : 0;
+
+  const totalCotisationsSalariales  = r2(cnssSal + amoSal + cimrSal);
+  const totalCotisationsPatronales  = r2(cnssPat + amoPat + cimrPat);
+
+  // ── IR
+  const exonereIR    = sumExonereIR(primes) + sumExonereIR(avantages);
+  const brutImposable = salaireBrut - exonereIR;
+  const fp            = fraisPro(brutImposable);
+  const netImposable  = brutImposable - fp - totalCotisationsSalariales;
+  const igr           = calculateIGR(netImposable, sf, nbCharges);
+
+  const netPayer      = Math.max(0, r2(salaireBrut - totalCotisationsSalariales - igr));
+  const salaireBrutOriginal = salaireBrutBase + totalPrimes + totalAvantages;
+  const totalDesCouts = r2(salaireBrutOriginal + totalCotisationsPatronales);
+
+  const cotisationsDetails: CotisationDetail[] = [
+    { code: "CNSS", libelle: "Cotisation CNSS",
+      base: baseCNSS, tauxSalarial: TAUX_CNSS_SALARIAL, montantSalarial: cnssSal,
+      tauxPatronal: TAUX_CNSS_PATRONAL, montantPatronal: cnssPat },
+    { code: "AMO", libelle: "Cotisation AMO",
+      base: brutCotisable, tauxSalarial: TAUX_AMO_SALARIAL, montantSalarial: amoSal,
+      tauxPatronal: TAUX_AMO_PATRONAL, montantPatronal: amoPat },
+  ];
+  if (input.cimrConfig && cimrTaux) {
+    cotisationsDetails.push({
+      code: "CIMR", libelle: `CIMR ${input.cimrConfig.produit.replace("_", " ")}`,
+      base: cimrBase(brutCotisable, input.cimrConfig),
+      tauxSalarial: cimrTaux.salarial, montantSalarial: cimrSal,
+      tauxPatronal: cimrTaux.patronal, montantPatronal: cimrPat,
+    });
+  }
+
+  return {
+    salaireBase, salaireBrutBase, totalPrimes, totalAvantages, salaireBrut,
+    totalCotisationsSalariales, totalCotisationsPatronales,
+    brutImposable, fraisProfessionnels: fp, netImposable,
+    igr, retenuesBrute, netPayer, totalDesCouts, cotisationsDetails,
+    tauxCIMRSalarial: cimrTaux?.salarial, tauxCIMRPatronal: cimrTaux?.patronal,
+  };
+}
+
+// ─── Net → Brut (dichotomie) ─────────────────────────────────────────────────
+
+function calculateNetToGross(input: NetToGrossInput): PayrollResult {
+  const { netCible, ...rest } = input;
+  const tolerance = 0.001;
+  const maxIterations = 200;
+
+  let baseMin = netCible;
+  let baseMax = netCible * 2.5;
+  let bestResult: PayrollResult | null = null;
+
+  for (let i = 0; i < maxIterations; i++) {
+    const baseEstime = (baseMin + baseMax) / 2;
+    const result = calculateGrossToNet({ ...rest, salaireBase: baseEstime });
+    bestResult = result;
+    const diff = result.netPayer - netCible;
+    if (Math.abs(diff) < tolerance) break;
+    if (diff > 0) baseMax = baseEstime;
+    else baseMin = baseEstime;
+  }
+
+  if (bestResult) bestResult.netPayer = netCible;
+  return bestResult!;
+}
+
+// ─── API publique ─────────────────────────────────────────────────────────────
+
+export const payrollEngine = { calculateGrossToNet, calculateNetToGross };

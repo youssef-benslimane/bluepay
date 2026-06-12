@@ -52,26 +52,7 @@ export interface ContactInfo {
   hours: string;
 }
 
-export interface SimulatorInputBrutNet {
-  salaireBrut: number;
-  situationFamiliale: "celibataire" | "marie" | "divorce" | "veuf";
-  nombreEnfants: number;
-  anciennete: number;
-}
-
-export interface SimulatorInputNetBrut {
-  salaireNet: number;
-}
-
-export interface SimulatorResult {
-  salaireBrut: number;
-  cnss: number;
-  amo: number;
-  ir: number;
-  salaireNet: number;
-  totalCotisations: number;
-  tauxEffectifIR: number;
-}
+export type { PayrollResult, PayrollInput, NetToGrossInput, CimrConfig, SimulationItem, CotisationDetail, SituationFamiliale, TypeContrat, ProduitCimr } from "@/features/simulator/SimulatorEngine";
 
 export interface ContactFormData {
   prenom: string;
