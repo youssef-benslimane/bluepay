@@ -13,24 +13,6 @@ const PROBLEMS_SOLVED = [
   "Outils inadaptés à la réglementation marocaine",
 ];
 
-const VALUE_PROPS = [
-  {
-    title: "Interface intuitive",
-    description:
-      "Conçu pour les gestionnaires RH, sans compétences techniques requises. Interface fluide, accessible sur tablette et mobile.",
-  },
-  {
-    title: "Inspiré des meilleurs systèmes",
-    description:
-      "BluePay s'inspire de la logique de paie et de la structuration des données des systèmes avancés comme SAP, tout en restant accessible.",
-  },
-  {
-    title: "Gestion RH complète",
-    description:
-      "De l'embauche des salariés jusqu'aux déclarations sociales et fiscales, BluePay couvre tout le cycle de vie RH.",
-  },
-];
-
 export function PresentationSection() {
   return (
     <section id="presentation" className="py-20 lg:py-28">
@@ -69,7 +51,7 @@ export function PresentationSection() {
             </div>
           </motion.div>
 
-          {/* Right */}
+          {/* Right — Stats */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -77,29 +59,7 @@ export function PresentationSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col gap-5"
           >
-            {VALUE_PROPS.map((prop, i) => (
-              <motion.div
-                key={prop.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 + 0.3 }}
-                className="flex gap-4 rounded-xl border border-border bg-white p-5 [box-shadow:var(--shadow-card)]"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg font-bold text-primary">
-                  {i + 1}
-                </div>
-                <div>
-                  <h3 className="mb-1 font-semibold text-dark">{prop.title}</h3>
-                  <p className="text-sm leading-relaxed text-muted">
-                    {prop.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 pt-2">
+            <div className="grid grid-cols-3 gap-4">
               {[
                 { value: "100%", label: "Conforme CNSS/AMO/IR" },
                 { value: "PME", label: "Adaptées Maroc" },

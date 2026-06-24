@@ -13,7 +13,7 @@ import {
   CIMR_OPTIONS_AL_KAMIL_TCNSS,
   CIMR_OPTIONS_AL_MOUNASSIB,
 } from "./SimulatorEngine";
-import type { PayrollResult, ProduitCimr, TypeContrat } from "./SimulatorEngine";
+import type { PayrollResult, ProduitCimr } from "./SimulatorEngine";
 import { formatCurrency } from "@/lib/utils";
 
 // ─── Schéma ────────────────────────────────────────────────────────────────
@@ -28,10 +28,9 @@ const itemSchema = z.object({
 const schema = z.object({
   salaireBase:             z.number({ message: "Montant invalide" }).min(1, "Requis"),
   tauxActivite:            z.number().min(1).max(100),
-  situationFamiliale:      z.enum(["C","M"]),
   nombrePersonnesACharge:  z.number().min(0).max(10),
   retenuesBrute:           z.number().min(0),
-  cimrProduit:             z.string(),          // "" | "AL_KAMIL" | ...
+  cimrProduit:             z.string(),
   cimrTauxOption:          z.string(),
   primes:                  z.array(itemSchema),
   avantages:               z.array(itemSchema),
@@ -54,7 +53,7 @@ const sel =
 
 // ─── Composant ─────────────────────────────────────────────────────────────
 
-export function SimulatorBrutNet({ typeContrat }: { typeContrat: TypeContrat }) {
+export function SimulatorBrutNet() {
   const [result, setResult] = useState<PayrollResult | null>(null);
 
   const {
@@ -67,7 +66,6 @@ export function SimulatorBrutNet({ typeContrat }: { typeContrat: TypeContrat }) 
     resolver: zodResolver(schema),
     defaultValues: {
       tauxActivite: 100,
-      situationFamiliale: "C",
       nombrePersonnesACharge: 0,
       retenuesBrute: 0,
       cimrProduit: "",
@@ -103,8 +101,6 @@ export function SimulatorBrutNet({ typeContrat }: { typeContrat: TypeContrat }) 
     const res = payrollEngine.calculateGrossToNet({
       salaireBase: data.salaireBase,
       tauxActivite: data.tauxActivite,
-      typeContrat: typeContrat,
-      situationFamiliale: data.situationFamiliale,
       nombrePersonnesACharge: data.nombrePersonnesACharge,
       retenuesBrute: data.retenuesBrute,
       cimrConfig:
@@ -170,15 +166,6 @@ export function SimulatorBrutNet({ typeContrat }: { typeContrat: TypeContrat }) 
               placeholder="0"
               {...register("retenuesBrute", { valueAsNumber: true })}
             />
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-dark">
-                Situation familiale
-              </label>
-              <select className={sel} {...register("situationFamiliale")}>
-                <option value="C">Célibataire / Divorcé(e)</option>
-                <option value="M">Marié(e)</option>
-              </select>
-            </div>
           </div>
 
           {/* CIMR */}

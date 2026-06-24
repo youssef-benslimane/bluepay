@@ -254,7 +254,7 @@ export function SimulatorResults({ result, isNetToBrut = false }: SimulatorResul
       </div>
 
       <p className="text-center text-xs text-muted italic">
-        ⚠️ Résultats indicatifs — taux CNSS, AMO et barème IR en vigueur 2025. Consultez un expert-comptable pour des calculs définitifs.
+        ⚠️ Résultats indicatifs — taux CNSS, AMO et barème IR en vigueur 2026. Consultez un expert-comptable pour des calculs définitifs.
       </p>
     </motion.div>
   );

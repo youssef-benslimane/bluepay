@@ -2,7 +2,8 @@ export interface PricingPlan {
   id: string;
   name: string;
   tagline: string;
-  price: string | null;
+  basePrice: number | null;
+  perSalaryPrice: number | null;
   priceLabel: string;
   maxSalaries: string;
   features: string[];

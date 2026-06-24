@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { HeroSection } from "@/features/home/HeroSection";
-import { PresentationSection } from "@/features/home/PresentationSection";
-import { AdvantagesSection } from "@/features/home/AdvantagesSection";
+import { RolesSection } from "@/features/home/RolesSection";
 import { softwareApplicationJsonLd, organizationJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
@@ -44,8 +43,7 @@ export default function HomePage() {
         }}
       />
       <HeroSection />
-      <PresentationSection />
-      <AdvantagesSection />
+      <RolesSection />
     </>
   );
 }

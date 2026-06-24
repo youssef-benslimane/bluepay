@@ -1,9 +1,9 @@
 import type { ContactInfo } from "@/types";
 
 export const CONTACT_INFO: ContactInfo = {
-  phone: "+212 5XX-XXXXXX",
+  phone: "+212 6 11 29 97 03",
   email: "contact@bluepay.ma",
-  address: "Casablanca, Maroc",
+  address: "Rabat, Maroc",
   hours: "Lundi–Vendredi, 9h–18h",
 };
 

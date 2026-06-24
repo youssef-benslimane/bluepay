@@ -17,7 +17,7 @@ export const SOLUTIONS: SolutionItem[] = [
       "Évolutivité instantanée",
       "Support technique inclus",
     ],
-    highlighted: true,
+    highlighted: false,
   },
   {
     id: "onpremise",

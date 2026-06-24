@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Calendar, ArrowRight } from "lucide-react";
 import { CONTACT_INFO } from "@/data/contact";
+import { Button } from "@/components/ui/Button";
+import { DemoBookingModal } from "@/features/home/DemoBookingModal";
 
 const INFO_ITEMS = [
   {
@@ -32,6 +35,8 @@ const INFO_ITEMS = [
 ];
 
 export function ContactInfo() {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-5">
       <div>
@@ -80,15 +85,29 @@ export function ContactInfo() {
       </div>
 
       {/* Highlight box */}
-      <div className="rounded-xl border border-primary/20 bg-primary/5 p-5">
-        <h3 className="mb-1 font-semibold text-dark">
-          Vous souhaitez une démonstration ?
-        </h3>
-        <p className="text-sm text-muted">
-          Nos experts vous présentent BluePay en 30 minutes et répondent à
-          toutes vos questions sur la paie marocaine.
-        </p>
+      <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 flex flex-col gap-4">
+        <div>
+          <h3 className="mb-1 font-semibold text-dark">
+            Vous souhaitez une démonstration ?
+          </h3>
+          <p className="text-sm text-muted">
+            Nos experts vous présentent BluePay en 30 minutes et répondent à
+            toutes vos questions sur la paie marocaine.
+          </p>
+        </div>
+        <Button
+          variant="primary"
+          size="md"
+          className="group w-full"
+          onClick={() => setModalOpen(true)}
+        >
+          <Calendar size={16} />
+          Réserver votre démo
+          <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+        </Button>
       </div>
+
+      <DemoBookingModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 }

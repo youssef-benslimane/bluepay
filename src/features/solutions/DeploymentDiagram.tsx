@@ -44,8 +44,9 @@ export function SaasDiagram() {
         </div>
 
         {/* Devices */}
-        <div className="flex gap-6">
+        <div className="flex gap-4">
           {[
+            { label: "Configurateur", sublabel: "Paramétrage" },
             { label: "Responsable RH", sublabel: "Navigateur" },
             { label: "Direction", sublabel: "Mobile/Tablette" },
           ].map((device) => (

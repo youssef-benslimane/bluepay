@@ -1,22 +1,23 @@
 export const NAV_LINKS = [
   { label: "Accueil", href: "/" },
-  { label: "Nos Solutions", href: "/solutions" },
-  { label: "Nos Fonctionnalités", href: "/fonctionnalites" },
-  { label: "Nos Tarifs", href: "/pricing" },
-  { label: "Simulateur", href: "/simulateur" },
+  { label: "À propos", href: "/a-propos" },
+  { label: "Nos solutions", href: "/solutions" },
+  { label: "Nos services", href: "/fonctionnalites" },
+  { label: "Notre offre", href: "/pricing" },
+  { label: "Simulateur de paie", href: "/simulateur" },
 ] as const;
 
 export const FOOTER_LINKS = {
   product: [
-    { label: "Nos Fonctionnalités", href: "/fonctionnalites" },
-    { label: "Nos Solutions", href: "/solutions" },
-    { label: "Tarifs", href: "/pricing" },
+    { label: "Nos services", href: "/fonctionnalites" },
+    { label: "Nos solutions", href: "/solutions" },
+    { label: "Notre offre", href: "/pricing" },
     { label: "Simulateur de paie", href: "/simulateur" },
   ],
   company: [
-    { label: "À propos", href: "/#presentation" },
+    { label: "À propos", href: "/a-propos" },
     { label: "Contact", href: "/contact" },
-    { label: "Demander une démo", href: "/contact?demo=true" },
+    { label: "Réserver votre démo", href: "/contact?demo=true" },
   ],
   legal: [
     { label: "Mentions légales", href: "/mentions-legales" },

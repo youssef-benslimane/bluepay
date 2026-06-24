@@ -99,12 +99,12 @@ export const ADVANTAGES: Advantage[] = [
   },
   {
     id: "erreurs",
-    title: "Zéro erreur de calcul",
+    title: "Moins d'erreurs de calcul",
     description:
-      "Le moteur de calcul BluePay applique automatiquement les règles légales marocaines, éliminant les erreurs humaines.",
+      "Le moteur de calcul BluePay applique automatiquement les règles légales marocaines, réduisant considérablement les erreurs de calcul de nature humaine.",
     icon: "CheckCircle2",
-    metric: "0",
-    metricLabel: "erreur de calcul",
+    metric: "-95%",
+    metricLabel: "d'erreurs de calcul humaines",
   },
   {
     id: "conformite",
@@ -128,5 +128,12 @@ export const ADVANTAGES: Advantage[] = [
     description:
       "Interface intuitive conçue pour les gestionnaires RH, sans formation longue ni compétences techniques.",
     icon: "Sparkles",
+  },
+  {
+    id: "responsive",
+    title: "Application responsive",
+    description:
+      "Accessible depuis n'importe quel appareil - ordinateur, tablette ou smartphone - sans aucune installation.",
+    icon: "Smartphone",
   },
 ];
