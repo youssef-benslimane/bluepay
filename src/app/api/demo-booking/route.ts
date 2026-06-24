@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import nodemailer from "nodemailer";
-import { prisma } from "@/lib/prisma";
 
 const bookingSchema = z.object({
   date:      z.string().min(1),
@@ -12,6 +11,16 @@ const bookingSchema = z.object({
   telephone: z.string().min(1),
   societe:   z.string().optional(),
 });
+
+// Lazy import Prisma — n'échoue pas si SQLite n'est pas disponible
+async function tryGetPrisma() {
+  try {
+    const { prisma } = await import("@/lib/prisma");
+    return prisma;
+  } catch {
+    return null;
+  }
+}
 
 function createTransporter() {
   return nodemailer.createTransport({
@@ -32,7 +41,7 @@ function formatDate(dateStr: string) {
 
 async function sendEmails(
   data: { prenom: string; nom: string; email: string; telephone: string; societe?: string; heure: string },
-  bookingId: number,
+  bookingId: number | null,
   dateFormatted: string
 ) {
   const smtpPass = process.env.SMTP_PASS;
@@ -56,7 +65,7 @@ async function sendEmails(
         <tr><td style="padding:8px;font-weight:bold">Date</td><td style="padding:8px">${dateFormatted}</td></tr>
         <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Heure</td><td style="padding:8px">${data.heure}</td></tr>
       </table>
-      <p style="color:#888;font-size:12px;margin-top:24px">ID réservation : #${bookingId}</p>
+      ${bookingId ? `<p style="color:#888;font-size:12px;margin-top:24px">ID réservation : #${bookingId}</p>` : ""}
     `,
   });
 
@@ -88,28 +97,35 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const data = bookingSchema.parse(body);
 
-    // ── 1. Vérifier qu'aucune réservation n'existe déjà sur ce créneau ──────
-    const existing = await prisma.demoBooking.findFirst({
-      where: { date: data.date, heure: data.heure },
-    });
+    const dateFormatted = formatDate(data.date);
+    let bookingId: number | null = null;
 
-    if (existing) {
-      return NextResponse.json(
-        { success: false, message: "Ce créneau est déjà réservé. Veuillez en choisir un autre." },
-        { status: 409 }
-      );
+    // ── 1. Tentative de sauvegarde en base (optionnelle) ────────────────────
+    const prisma = await tryGetPrisma();
+    if (prisma) {
+      try {
+        const existing = await prisma.demoBooking.findFirst({
+          where: { date: data.date, heure: data.heure },
+        });
+        if (existing) {
+          return NextResponse.json(
+            { success: false, message: "Ce créneau est déjà réservé. Veuillez en choisir un autre." },
+            { status: 409 }
+          );
+        }
+        const booking = await prisma.demoBooking.create({ data });
+        bookingId = booking.id;
+      } catch (dbErr) {
+        console.warn("DB indisponible (non-bloquant) :", dbErr);
+      }
     }
 
-    // ── 2. Enregistrer la réservation ────────────────────────────────────────
-    const booking = await prisma.demoBooking.create({ data });
-
-    // ── 3. Envoyer les emails en arrière-plan (non-bloquant) ─────────────────
-    const dateFormatted = formatDate(data.date);
-    sendEmails(data, booking.id, dateFormatted).catch((err) =>
+    // ── 2. Envoyer les emails en arrière-plan (non-bloquant) ─────────────────
+    sendEmails(data, bookingId, dateFormatted).catch((err) =>
       console.error("Email error (non-bloquant):", err)
     );
 
-    return NextResponse.json({ success: true, bookingId: booking.id }, { status: 201 });
+    return NextResponse.json({ success: true, bookingId }, { status: 201 });
 
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -129,10 +145,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, message: "Paramètre date manquant" }, { status: 400 });
   }
 
-  const bookings = await prisma.demoBooking.findMany({
-    where: { date },
-    select: { heure: true },
-  });
+  const prisma = await tryGetPrisma();
+  if (!prisma) {
+    return NextResponse.json({ bookedSlots: [] });
+  }
 
-  return NextResponse.json({ bookedSlots: bookings.map((b) => b.heure) });
+  try {
+    const bookings = await prisma.demoBooking.findMany({
+      where: { date },
+      select: { heure: true },
+    });
+    return NextResponse.json({ bookedSlots: bookings.map((b) => b.heure) });
+  } catch {
+    return NextResponse.json({ bookedSlots: [] });
+  }
 }
