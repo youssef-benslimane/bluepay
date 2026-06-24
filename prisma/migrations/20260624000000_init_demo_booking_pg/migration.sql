@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "DemoBooking" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" SERIAL NOT NULL,
     "date" TEXT NOT NULL,
     "heure" TEXT NOT NULL,
     "nom" TEXT NOT NULL,
@@ -8,5 +8,7 @@ CREATE TABLE "DemoBooking" (
     "email" TEXT NOT NULL,
     "telephone" TEXT NOT NULL,
     "societe" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "DemoBooking_pkey" PRIMARY KEY ("id")
 );
