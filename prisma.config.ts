@@ -1,5 +1,9 @@
-import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import { config } from "dotenv";
+import { defineConfig } from "prisma/config";
+
+// Prisma CLI lit .env par défaut — on charge aussi .env.local pour le dev local
+config({ path: ".env.local", override: true });
+config({ path: ".env" });
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -8,6 +12,6 @@ export default defineConfig({
   },
   datasource: {
     // DIRECT_URL : connexion directe (sans pooler) pour les migrations CLI
-    url: env("DIRECT_URL"),
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL ?? "",
   },
 });
