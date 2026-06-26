@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import nodemailer from "nodemailer";
+import { internalFromAddress, isMailConfigured, noreplyFromAddress, sendMail } from "@/lib/mail";
 
 const bookingSchema = z.object({
   date:      z.string().min(1),
@@ -22,22 +22,6 @@ async function tryGetPrisma() {
   }
 }
 
-function createTransporter() {
-  return nodemailer.createTransport({
-    host:              process.env.SMTP_HOST ?? "mail.bluepay.ma",
-    port:              Number(process.env.SMTP_PORT ?? 465),
-    secure:            Number(process.env.SMTP_PORT ?? 465) === 465,
-    connectionTimeout: 10000,
-    greetingTimeout:   10000,
-    socketTimeout:     15000,
-    tls:               { rejectUnauthorized: false },
-    auth: {
-      user: process.env.SMTP_USER ?? "contact@bluepay.ma",
-      pass: process.env.SMTP_PASS ?? "",
-    },
-  });
-}
-
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
   return d.toLocaleDateString("fr-MA", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -48,16 +32,10 @@ async function sendEmails(
   bookingId: number | null,
   dateFormatted: string
 ) {
-  const smtpPass = process.env.SMTP_PASS;
-  if (!smtpPass) {
-    console.warn("SMTP_PASS non configuré — emails non envoyés");
-    return;
-  }
-  const transporter = createTransporter();
-
-  await transporter.sendMail({
-    from:    `"BluePay Démos" <contact@bluepay.ma>`,
-    to:      "contact@bluepay.ma",
+  await sendMail({
+    from: internalFromAddress("BluePay Démos"),
+    to: "contact@bluepay.ma",
+    replyTo: data.email,
     subject: `🗓️ Nouvelle démo — ${dateFormatted} à ${data.heure}`,
     html: `
       <h2 style="color:#1a6bcc">Nouvelle réservation de démo</h2>
@@ -73,9 +51,10 @@ async function sendEmails(
     `,
   });
 
-  await transporter.sendMail({
-    from:    `"BluePay" <contact@bluepay.ma>`,
-    to:      data.email,
+  await sendMail({
+    from: noreplyFromAddress("BluePay"),
+    to: data.email,
+    replyTo: "contact@bluepay.ma",
     subject: `✅ Votre démo BluePay est confirmée — ${dateFormatted} à ${data.heure}`,
     html: `
       <div style="font-family:sans-serif;max-width:560px;margin:auto">
@@ -124,11 +103,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ── 2. Envoyer les emails (on attend avant de répondre) ──────────────────
+    // ── 2. Envoyer les emails ───────────────────────────────────────────────
+    if (!isMailConfigured()) {
+      console.error("Demo booking email error: SMTP_PASS non configuré");
+      return NextResponse.json(
+        { success: false, message: "Réservation enregistrée mais email indisponible. Contactez-nous au +212 6 11 29 97 03." },
+        { status: 503 }
+      );
+    }
+
     try {
       await sendEmails(data, bookingId, dateFormatted);
     } catch (emailErr) {
       console.error("Email error:", emailErr);
+      return NextResponse.json(
+        { success: false, message: "Impossible d'envoyer la confirmation par email. Réessayez ou contactez-nous." },
+        { status: 502 }
+      );
     }
 
     return NextResponse.json({ success: true, bookingId }, { status: 201 });
