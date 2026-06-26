@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 // Dev local : charge .env.local puis .env (Vercel injecte directement process.env)
 if (process.env.NODE_ENV !== "production") {
@@ -7,13 +7,18 @@ if (process.env.NODE_ENV !== "production") {
   config({ path: ".env" });
 }
 
+// prisma generate n'ouvre pas de connexion — une URL placeholder suffit au build Vercel
+const databaseUrl =
+  process.env.DIRECT_URL ??
+  process.env.DATABASE_URL ??
+  "postgresql://build:build@localhost:5432/build";
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
   datasource: {
-    // DIRECT_URL : connexion directe (sans pooler) pour les migrations CLI
-    url: env("DIRECT_URL") ?? env("DATABASE_URL"),
+    url: databaseUrl,
   },
 });
