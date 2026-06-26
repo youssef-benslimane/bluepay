@@ -42,6 +42,10 @@ export default function PricingPage() {
             ))}
           </div>
 
+          <p className="mt-6 text-center text-xs text-muted">
+            <sup>*</sup> Le montant indiqué comprend les frais d&apos;installation, de gestion et de maintenance.
+          </p>
+
         </Container>
       </section>
 

@@ -5,7 +5,7 @@ export const FEATURES: Feature[] = [
     id: "multi-societe",
     title: "Gestion multi-sociétés",
     description:
-      "Gérez plusieurs sociétés depuis une seule plateforme, chacune avec ses propres paramètres, salariés et périodes de paie.",
+      "Gérez plusieurs sociétés depuis une seule plateforme, chacune avec ses propres paramètres et salariés.",
     icon: "Building2",
   },
   {
@@ -21,34 +21,6 @@ export const FEATURES: Feature[] = [
     description:
       "Calcul automatisé des salaires mensuels et horaires, intégrant tous les éléments variables de rémunération.",
     icon: "Calculator",
-  },
-  {
-    id: "cnss",
-    title: "CNSS",
-    description:
-      "Calcul automatique des cotisations CNSS salariales et patronales selon les taux en vigueur au Maroc.",
-    icon: "Shield",
-  },
-  {
-    id: "amo",
-    title: "AMO",
-    description:
-      "Gestion de l'Assurance Maladie Obligatoire (AMO) intégrée dans le moteur de calcul de la paie.",
-    icon: "HeartPulse",
-  },
-  {
-    id: "ir",
-    title: "Impôt sur le Revenu (IR)",
-    description:
-      "Application du barème IR marocain avec déductions légales, abattements forfaitaires et situations familiales.",
-    icon: "Receipt",
-  },
-  {
-    id: "absences",
-    title: "Gestion des absences",
-    description:
-      "Déduction automatique des absences sur la paie, gestion des congés, jours fériés et heures supplémentaires.",
-    icon: "CalendarX",
   },
   {
     id: "bulletins",
@@ -110,7 +82,7 @@ export const ADVANTAGES: Advantage[] = [
     id: "conformite",
     title: "Conformité réglementaire",
     description:
-      "Toujours à jour avec la réglementation marocaine : CNSS, AMO, CIMR, IR, Code du Travail.",
+      "Toujours à jour avec la réglementation marocaine : CNSS, AMO, CIMR, IR, Code du travail.",
     icon: "BadgeCheck",
     metric: "100%",
     metricLabel: "conformité légale",

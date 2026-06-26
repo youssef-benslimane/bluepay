@@ -54,6 +54,8 @@ export interface CotisationDetail {
   montantSalarial: number;
   tauxPatronal: number;
   montantPatronal: number;
+  /** Ligne uniquement affichée dans la section charges patronales */
+  patronalOnly?: boolean;
 }
 
 export interface PayrollResult {
@@ -79,12 +81,18 @@ export interface PayrollResult {
 // ─── Taux 2025 ──────────────────────────────────────────────────────────────
 
 const TAUX_CNSS_SALARIAL = 4.48;
-const TAUX_CNSS_PATRONAL = 16.98;
+// CNSS patronale décomposée :
+// - Vieillesse/invalidité/décès : 8.98% plafonnée à 6 000 MAD
+// - Prestations familiales      : 6.40% non plafonnée
+// - IPE (perte d'emploi)        : 1.30% non plafonnée
+const TAUX_CNSS_PAT_VIE  = 8.98;   // plafonnée
+const TAUX_CNSS_PAT_FAM  = 6.40;   // non plafonnée
+const TAUX_CNSS_PAT_IPE  = 1.30;   // non plafonnée
 const PLAFOND_CNSS = 6000;
 
-const TAUX_AMO_SALARIAL = 4.11;
-const TAUX_AMO_PATRONAL = 4.11;
-// AMO : pas de plafond (appliqué sur le brut global)
+const TAUX_AMO_SALARIAL = 2.26;   // taux salarié (2.26%)
+const TAUX_AMO_PATRONAL = 4.11;   // taux patronal (4.11%)
+// AMO : pas de plafond (appliqué sur le brut cotisable)
 
 // Barème IR annuel 2025 (Loi de Finances 2023-2025)
 const BAREME_IR = [
@@ -120,6 +128,48 @@ export const CIMR_OPTIONS_AL_KAMIL_TCNSS = Object.entries(TAUX_CIMR_MAP).map(
 export const CIMR_OPTIONS_AL_MOUNASSIB = CIMR_OPTIONS_AL_KAMIL_TCNSS.filter(
   (o) => o.salarial >= 6
 );
+
+// ─── Helpers CNSS ───────────────────────────────────────────────────────────
+
+/**
+ * Retourne les deux lignes CNSS pour cotisationsDetails :
+ * 1. Vieillesse — salarial 4.48% + patronal 8.98% sur min(brutCotisable, 6000)
+ * 2. Social (famille + IPE) — patronalOnly, 8.0% sur brutCotisable non plafonné
+ */
+function buildCnssCotisations(
+  brutCotisable: number,
+  baseCNSS: number          // = min(brutCotisable, PLAFOND_CNSS)
+): CotisationDetail[] {
+  const cnssSal  = r2((baseCNSS * TAUX_CNSS_SALARIAL) / 100);
+  const cnssPat1 = r2((baseCNSS * TAUX_CNSS_PAT_VIE) / 100);
+  const cnssPat2 = r2((brutCotisable * TAUX_CNSS_PAT_FAM) / 100);
+  const cnssPat3 = r2((brutCotisable * TAUX_CNSS_PAT_IPE) / 100);
+
+  return [
+    {
+      code: "CNSS", libelle: "CNSS — Vieillesse",
+      base: baseCNSS,
+      tauxSalarial: TAUX_CNSS_SALARIAL, montantSalarial: cnssSal,
+      tauxPatronal: TAUX_CNSS_PAT_VIE,  montantPatronal: cnssPat1,
+    },
+    {
+      code: "CNSS", libelle: "CNSS — Prestations familiales",
+      base: brutCotisable,
+      tauxSalarial: 0, montantSalarial: 0,
+      tauxPatronal: TAUX_CNSS_PAT_FAM,
+      montantPatronal: cnssPat2,
+      patronalOnly: true,
+    },
+    {
+      code: "CNSS", libelle: "CNSS — IPE",
+      base: brutCotisable,
+      tauxSalarial: 0, montantSalarial: 0,
+      tauxPatronal: TAUX_CNSS_PAT_IPE,
+      montantPatronal: cnssPat3,
+      patronalOnly: true,
+    },
+  ];
+}
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -265,8 +315,9 @@ function calculateTAHFIZ(
 ): PayrollResult {
   // Salarial : CNSS + AMO sur le brut complet
   const baseCNSSSal = Math.min(salaireBrut, PLAFOND_CNSS);
-  const cnssSal    = r2((baseCNSSSal * TAUX_CNSS_SALARIAL) / 100);
-  const amoSal     = r2((salaireBrut * TAUX_AMO_SALARIAL) / 100);
+  const cnssRowsTAH = buildCnssCotisations(salaireBrut, baseCNSSSal);
+  const cnssSal     = cnssRowsTAH[0].montantSalarial;
+  const amoSal      = r2((salaireBrut * TAUX_AMO_SALARIAL) / 100);
 
   const cimrTaux = cimrConfig ? getCimrTaux(cimrConfig) : null;
   const cimrSal  = cimrConfig && cimrTaux ? cimrSalarialAmt(salaireBrut, cimrConfig) : 0;
@@ -276,10 +327,11 @@ function calculateTAHFIZ(
 
   // Patronal : exonération sur les 10 000 premiers DH
   const exonerationTAHFIZ = 10000;
-  const basePatronale = Math.max(0, salaireBrut - exonerationTAHFIZ);
-  const baseCNSSPat   = Math.min(basePatronale, PLAFOND_CNSS);
-  const cnssPat       = r2((baseCNSSPat * TAUX_CNSS_PATRONAL) / 100);
-  const amoPat        = r2((basePatronale * TAUX_AMO_PATRONAL) / 100);
+  const basePatronale  = Math.max(0, salaireBrut - exonerationTAHFIZ);
+  const baseCNSSPat    = Math.min(basePatronale, PLAFOND_CNSS);
+  const cnssRowsPat    = buildCnssCotisations(basePatronale, baseCNSSPat);
+  const cnssPat        = r2(cnssRowsPat.reduce((s, r) => s + r.montantPatronal, 0));
+  const amoPat         = r2((basePatronale * TAUX_AMO_PATRONAL) / 100);
   const totalCotisationsPatronales = cnssPat + amoPat + cimrPat;
 
   // Base IR TAHFIZ = max(0, brut - 10 000)
@@ -297,9 +349,7 @@ function calculateTAHFIZ(
   const totalDesCouts = r2(salaireBrutOriginal + totalCotisationsPatronales - totalAvantages);
 
   const cotisationsDetails: CotisationDetail[] = [
-    { code: "CNSS", libelle: "Cotisation CNSS",
-      base: baseCNSSSal, tauxSalarial: TAUX_CNSS_SALARIAL, montantSalarial: cnssSal,
-      tauxPatronal: TAUX_CNSS_PATRONAL, montantPatronal: cnssPat },
+    ...cnssRowsTAH,
     { code: "AMO", libelle: "Cotisation AMO",
       base: salaireBrut, tauxSalarial: TAUX_AMO_SALARIAL, montantSalarial: amoSal,
       tauxPatronal: TAUX_AMO_PATRONAL, montantPatronal: amoPat },
@@ -353,8 +403,9 @@ function calculateGrossToNet(input: PayrollInput): PayrollResult {
   const brutCotisable    = salaireBrut - exonereCnssAmo;
 
   const baseCNSS    = Math.min(brutCotisable, PLAFOND_CNSS);
-  const cnssSal     = r2((baseCNSS * TAUX_CNSS_SALARIAL) / 100);
-  const cnssPat     = r2((baseCNSS * TAUX_CNSS_PATRONAL) / 100);
+  const cnssRows    = buildCnssCotisations(brutCotisable, baseCNSS);
+  const cnssSal     = cnssRows[0].montantSalarial;
+  const cnssPat     = r2(cnssRows.reduce((s, r) => s + r.montantPatronal, 0));
 
   const amoSal      = r2((brutCotisable * TAUX_AMO_SALARIAL) / 100);
   const amoPat      = r2((brutCotisable * TAUX_AMO_PATRONAL) / 100);
@@ -378,9 +429,7 @@ function calculateGrossToNet(input: PayrollInput): PayrollResult {
   const totalDesCouts = r2(salaireBrutOriginal + totalCotisationsPatronales);
 
   const cotisationsDetails: CotisationDetail[] = [
-    { code: "CNSS", libelle: "Cotisation CNSS",
-      base: baseCNSS, tauxSalarial: TAUX_CNSS_SALARIAL, montantSalarial: cnssSal,
-      tauxPatronal: TAUX_CNSS_PATRONAL, montantPatronal: cnssPat },
+    ...cnssRows,
     { code: "AMO", libelle: "Cotisation AMO",
       base: brutCotisable, tauxSalarial: TAUX_AMO_SALARIAL, montantSalarial: amoSal,
       tauxPatronal: TAUX_AMO_PATRONAL, montantPatronal: amoPat },

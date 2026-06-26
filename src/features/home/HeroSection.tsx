@@ -2,36 +2,11 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  ArrowRight, Calendar, ChevronDown, Sparkles, Zap, Users, Play, CheckCircle
-} from "lucide-react";
-import { Container } from "@/components/layout/Container";
+import { ArrowRight, Calendar, ChevronDown, Play } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { DemoBookingModal } from "./DemoBookingModal";
 
-const SCROLLING_FEATURES = [
-  {
-    icon: Sparkles,
-    title: "Interface intuitive",
-    description: "Conçu pour les gestionnaires RH, sans compétences techniques requises.",
-  },
-  {
-    icon: Zap,
-    title: "Inspiré des meilleurs systèmes",
-    description: "La rigueur de SAP, l'accessibilité d'une solution PME.",
-  },
-  {
-    icon: Users,
-    title: "Gestion RH complète",
-    description: "De l'embauche jusqu'aux déclarations sociales et fiscales.",
-  },
-];
 
-const HIGHLIGHTS = [
-  "Bulletins de paie PDF automatiques",
-  "Déclarations CNSS, AMO, IR conformes 2026",
-  "Multi-sociétés, multi-utilisateurs",
-];
 
 // ─── Remplace par l'URL de ta vidéo de démo ──────────────────────────────────
 const DEMO_VIDEO_URL = "";
@@ -56,79 +31,39 @@ export function HeroSection() {
       <div className="absolute -bottom-40 -right-32 h-[500px] w-[500px] rounded-full bg-indigo-400/10 blur-[100px]" />
       <div className="absolute top-1/3 right-0 h-[350px] w-[350px] rounded-full bg-sky-300/10 blur-[90px]" />
 
-      <Container className="relative z-10 py-24 lg:py-32">
+      {/* ── Layout pleine largeur ─────────────────────────────────────── */}
+      <div className="relative z-10 flex min-h-screen items-center">
+        <div className="grid w-full grid-cols-1 lg:grid-cols-2 items-center">
 
-        {/* ── Layout 2 colonnes ─────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-
-          {/* ── Colonne gauche : texte ────────────────────────────────── */}
+          {/* ── Colonne gauche : texte — paddé depuis le bord ─────────── */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="flex flex-col gap-6 text-left"
+            className="flex flex-col gap-8 px-8 py-24 sm:px-12 lg:px-16 xl:px-24 text-left"
           >
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                Solution de paie marocaine — 2026
-              </span>
-            </motion.div>
-
             {/* Titre */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-4xl font-bold leading-tight tracking-tight text-dark lg:text-5xl xl:text-6xl"
+              className="text-4xl font-bold leading-[1.15] tracking-tight text-dark lg:text-5xl"
             >
               La paie marocaine,{" "}
               <span className="gradient-text">simplifiée</span>{" "}
               et automatisée
             </motion.h1>
 
-            {/* Description */}
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-base text-muted leading-relaxed max-w-lg"
-            >
-              BluePay calcule bulletins, CNSS, AMO et IR en quelques secondes.
-              Fini les erreurs manuelles, gagnez en sérénité chaque fin de mois.
-            </motion.p>
-
-            {/* Checklist */}
-            <motion.ul
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.38 }}
-              className="flex flex-col gap-2"
-            >
-              {HIGHLIGHTS.map((item) => (
-                <li key={item} className="flex items-center gap-2.5 text-sm text-dark">
-                  <CheckCircle size={15} className="shrink-0 text-primary" />
-                  {item}
-                </li>
-              ))}
-            </motion.ul>
-
             {/* CTA */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.45 }}
-              className="flex flex-col gap-3 sm:flex-row"
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
               <Button
                 variant="primary"
                 size="lg"
-                className="group w-full sm:w-auto"
+                className="group"
                 onClick={() => setModalOpen(true)}
               >
                 <Calendar size={18} />
@@ -138,15 +73,15 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* ── Colonne droite : vidéo démo ───────────────────────────── */}
+          {/* ── Colonne droite : vidéo — flush contre le bord droit ───── */}
           <motion.div
-            initial={{ opacity: 0, x: 32 }}
+            initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
-            className="relative"
+            className="hidden lg:flex h-full items-center px-8 sm:px-12 lg:px-16 xl:px-24 py-16"
           >
             {/* Carte vidéo */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5">
+            <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5">
 
               {/* Barre de fausse navigation */}
               <div className="flex items-center gap-2 bg-gray-900 px-4 py-3">
@@ -195,55 +130,10 @@ export function HeroSection() {
                 )}
               </div>
             </div>
-
-            {/* Badge flottant */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="absolute -bottom-4 -left-4 rounded-xl bg-white px-4 py-3 shadow-lg ring-1 ring-black/5 flex items-center gap-3"
-            >
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50">
-                <CheckCircle size={18} className="text-green-500" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-dark">100 % conforme</p>
-                <p className="text-xs text-muted">CNSS · AMO · IR 2026</p>
-              </div>
-            </motion.div>
           </motion.div>
+
         </div>
-
-        {/* ── Scrolling feature cards (pleine largeur) ──────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.55 }}
-          className="mt-16 w-full overflow-hidden"
-          style={{ maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)" }}
-        >
-          <div className="flex gap-4 animate-marquee w-max">
-            {[...SCROLLING_FEATURES, ...SCROLLING_FEATURES].map((f, i) => {
-              const Icon = f.icon;
-              return (
-                <div
-                  key={i}
-                  className="flex flex-col gap-4 rounded-2xl border border-border bg-white p-8 [box-shadow:var(--shadow-card)] w-72 shrink-0"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
-                    <Icon size={26} className="text-primary" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-base font-semibold text-dark leading-tight">{f.title}</p>
-                    <p className="mt-2 text-sm text-muted leading-relaxed">{f.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-      </Container>
+      </div>
 
       <DemoBookingModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
 

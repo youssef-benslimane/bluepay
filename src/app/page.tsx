@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { HeroSection } from "@/features/home/HeroSection";
+import { ScrollingInfographics } from "@/features/home/ScrollingInfographics";
 import { RolesSection } from "@/features/home/RolesSection";
 import { softwareApplicationJsonLd, organizationJsonLd } from "@/lib/jsonld";
 
@@ -43,6 +44,7 @@ export default function HomePage() {
         }}
       />
       <HeroSection />
+      <ScrollingInfographics />
       <RolesSection />
     </>
   );

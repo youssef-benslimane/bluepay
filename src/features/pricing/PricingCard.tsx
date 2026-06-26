@@ -51,6 +51,7 @@ export function PricingCard({ plan, index }: PricingCardProps) {
                 <div className="text-3xl font-bold text-dark">
                   {plan.basePrice.toLocaleString("fr-MA")} DH
                   <span className="text-base font-normal text-muted"> HT / mois</span>
+                  <sup className="text-sm text-primary ml-0.5">*</sup>
                 </div>
                 <div className="mt-1 text-sm text-muted">
                   + {plan.perSalaryPrice} DH HT / salarié / mois

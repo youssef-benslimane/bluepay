@@ -24,11 +24,15 @@ async function tryGetPrisma() {
 
 function createTransporter() {
   return nodemailer.createTransport({
-    host:   process.env.SMTP_HOST   ?? "smtp.hostinger.com",
-    port:   Number(process.env.SMTP_PORT ?? 465),
-    secure: true,
+    host:              process.env.SMTP_HOST ?? "mail.bluepay.ma",
+    port:              Number(process.env.SMTP_PORT ?? 465),
+    secure:            Number(process.env.SMTP_PORT ?? 465) === 465,
+    connectionTimeout: 10000,
+    greetingTimeout:   10000,
+    socketTimeout:     15000,
+    tls:               { rejectUnauthorized: false },
     auth: {
-      user: process.env.SMTP_USER ?? "noreply@bluepay.ma",
+      user: process.env.SMTP_USER ?? "contact@bluepay.ma",
       pass: process.env.SMTP_PASS ?? "",
     },
   });
@@ -52,7 +56,7 @@ async function sendEmails(
   const transporter = createTransporter();
 
   await transporter.sendMail({
-    from:    `"BluePay Démos" <noreply@bluepay.ma>`,
+    from:    `"BluePay Démos" <contact@bluepay.ma>`,
     to:      "contact@bluepay.ma",
     subject: `🗓️ Nouvelle démo — ${dateFormatted} à ${data.heure}`,
     html: `
@@ -70,7 +74,7 @@ async function sendEmails(
   });
 
   await transporter.sendMail({
-    from:    `"BluePay" <noreply@bluepay.ma>`,
+    from:    `"BluePay" <contact@bluepay.ma>`,
     to:      data.email,
     subject: `✅ Votre démo BluePay est confirmée — ${dateFormatted} à ${data.heure}`,
     html: `
@@ -120,10 +124,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ── 2. Envoyer les emails en arrière-plan (non-bloquant) ─────────────────
-    sendEmails(data, bookingId, dateFormatted).catch((err) =>
-      console.error("Email error (non-bloquant):", err)
-    );
+    // ── 2. Envoyer les emails (on attend avant de répondre) ──────────────────
+    try {
+      await sendEmails(data, bookingId, dateFormatted);
+    } catch (emailErr) {
+      console.error("Email error:", emailErr);
+    }
 
     return NextResponse.json({ success: true, bookingId }, { status: 201 });
 

@@ -154,9 +154,6 @@ body {
   animation: marquee 18s linear infinite;
 }
 
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {

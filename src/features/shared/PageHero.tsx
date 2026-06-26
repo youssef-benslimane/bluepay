@@ -66,7 +66,7 @@ export function PageHero({
           )}
 
           {badge && (
-            <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary">
+            <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
               {badge}
             </span>
           )}

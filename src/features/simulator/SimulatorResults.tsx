@@ -152,8 +152,8 @@ export function SimulatorResults({ result, isNetToBrut = false }: SimulatorResul
                 </tr>
               )}
 
-              {result.cotisationsDetails.map((d) => (
-                <tr key={d.code} className="border-b border-border/30 last:border-0">
+              {result.cotisationsDetails.filter((d) => !d.patronalOnly).map((d, i) => (
+                <tr key={`${d.code}-${i}`} className="border-b border-border/30 last:border-0">
                   <td className="py-1.5 pr-3 text-xs font-semibold text-primary">{d.code}</td>
                   <td className="py-1.5 pr-3 text-xs text-dark">{d.libelle}</td>
                   <td className="py-1.5 pr-3 text-xs text-dark whitespace-nowrap">{fmt(d.base)}</td>
@@ -222,8 +222,8 @@ export function SimulatorResults({ result, isNetToBrut = false }: SimulatorResul
                 </tr>
               )}
 
-              {result.cotisationsDetails.map((d) => (
-                <tr key={d.code} className="border-b border-border/30 last:border-0">
+              {result.cotisationsDetails.map((d, i) => (
+                <tr key={`${d.code}-pat-${i}`} className="border-b border-border/30 last:border-0">
                   <td className="py-1.5 pr-3 text-xs font-semibold text-primary">{d.code}</td>
                   <td className="py-1.5 pr-3 text-xs text-dark">{d.libelle}</td>
                   <td className="py-1.5 pr-3 text-xs text-dark whitespace-nowrap">{fmt(d.base)}</td>

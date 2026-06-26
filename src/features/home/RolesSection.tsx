@@ -43,8 +43,8 @@ const ROLES = [
     description: "Gérez les salariés, exécutez les paies et envoyez les documents réglementaires chaque mois.",
     features: [
       { icon: Users, title: "Gestion des salariés", desc: "Fiches complètes, contrats, historique des rémunérations et suivi de carrière." },
-      { icon: Calculator, title: "Calcul de la paie", desc: "Lancement du calcul mensuel avec intégration automatique des éléments variables." },
       { icon: CalendarX, title: "Absences & congés", desc: "Saisie et validation des absences, congés et heures supplémentaires impactant la paie." },
+      { icon: Calculator, title: "Calcul de la paie", desc: "Lancement du calcul mensuel avec intégration automatique des éléments variables." },
       { icon: FileText, title: "Bulletins de paie", desc: "Génération et envoi des bulletins PDF conformes aux exigences légales marocaines." },
       { icon: ClipboardList, title: "Déclarations sociales", desc: "Production et transmission des déclarations CNSS, CIMR et SIMPL-IR." },
       { icon: History, title: "Historique & reconstitution", desc: "Consultation et reconstitution des paies passées pour tout audit ou litige." },
@@ -114,7 +114,6 @@ export function RolesSection() {
                   : "bg-surface text-dark hover:bg-primary/10 hover:text-primary border border-border"
               )}
             >
-              <span>{role.emoji}</span>
               {role.label}
             </button>
           ))}

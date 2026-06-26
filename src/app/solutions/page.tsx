@@ -24,7 +24,7 @@ export default function SolutionsPage() {
     <>
       <PageHero
         badge="Déploiement"
-        title="Nos Solutions"
+        title="Nos solutions"
         subtitle="BluePay s'adapte à votre organisation. Choisissez le mode de déploiement qui correspond à vos contraintes techniques, budgétaires et de sécurité."
       />
 

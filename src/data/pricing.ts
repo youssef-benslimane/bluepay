@@ -20,7 +20,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       "Export Excel",
       "Support email",
     ],
-    support: "Email (48h)",
+    support: "Réponse sous 48h",
     hosting: "Cloud SaaS",
     highlighted: false,
     ctaLabel: "Commencer",
@@ -40,7 +40,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       "Support prioritaire",
       "Formation incluse",
     ],
-    support: "Téléphone + Email (24h)",
+    support: "Téléphone + Email sous 24h",
     hosting: "Cloud SaaS ou On-Premise",
     highlighted: false,
     ctaLabel: "Commencer",
@@ -66,7 +66,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     support: "Dédié 7j/7",
     hosting: "On-Premise ou Cloud privé",
     highlighted: false,
-    ctaLabel: "Nous contacter",
+    ctaLabel: "Commencer",
   },
 ];
 

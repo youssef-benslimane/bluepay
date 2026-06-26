@@ -170,6 +170,7 @@ export function SimulatorNetBrut() {
             <Input
               label="Retenues brutes (MAD)"
               type="number"
+              step="any"
               placeholder="0"
               {...register("retenuesBrute", { valueAsNumber: true })}
             />
@@ -221,6 +222,7 @@ export function SimulatorNetBrut() {
                 <Input
                   label={idx === 0 ? "Montant (MAD)" : undefined}
                   type="number"
+                  step="any"
                   placeholder="0"
                   {...register(`primes.${idx}.montant`, { valueAsNumber: true })}
                 />
@@ -264,6 +266,7 @@ export function SimulatorNetBrut() {
                 <Input
                   label={idx === 0 ? "Montant (MAD)" : undefined}
                   type="number"
+                  step="any"
                   placeholder="0"
                   {...register(`avantages.${idx}.montant`, { valueAsNumber: true })}
                 />

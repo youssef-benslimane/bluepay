@@ -132,6 +132,7 @@ export function SimulatorBrutNet() {
         <Input
           label="Salaire de base mensuel ETP (MAD)"
           type="number"
+          step="any"
           placeholder="Ex : 8 000"
           required
           error={errors.salaireBase?.message}
@@ -163,6 +164,7 @@ export function SimulatorBrutNet() {
             <Input
               label="Retenues brutes (MAD)"
               type="number"
+              step="any"
               placeholder="0"
               {...register("retenuesBrute", { valueAsNumber: true })}
             />
@@ -216,6 +218,7 @@ export function SimulatorBrutNet() {
                 <Input
                   label={idx === 0 ? "Montant (MAD)" : undefined}
                   type="number"
+                  step="any"
                   placeholder="0"
                   {...register(`primes.${idx}.montant`, { valueAsNumber: true })}
                 />
@@ -259,6 +262,7 @@ export function SimulatorBrutNet() {
                 <Input
                   label={idx === 0 ? "Montant (MAD)" : undefined}
                   type="number"
+                  step="any"
                   placeholder="0"
                   {...register(`avantages.${idx}.montant`, { valueAsNumber: true })}
                 />
