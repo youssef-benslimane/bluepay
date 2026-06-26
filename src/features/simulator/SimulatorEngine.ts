@@ -82,12 +82,14 @@ export interface PayrollResult {
 
 const TAUX_CNSS_SALARIAL = 4.48;
 // CNSS patronale décomposée :
-// - Vieillesse/invalidité/décès : 8.98% plafonnée à 6 000 MAD
-// - Prestations familiales      : 6.40% non plafonnée
-// - IPE (perte d'emploi)        : 1.30% non plafonnée
+// - Vieillesse/invalidité/décès      : 8.98% plafonnée à 6 000 MAD
+// - Prestations familiales           : 6.40% non plafonnée
+// - IPE (perte d'emploi)             : 1.30% non plafonnée
+// - Taxe de formation professionnelle: 1.60% non plafonnée
 const TAUX_CNSS_PAT_VIE  = 8.98;   // plafonnée
 const TAUX_CNSS_PAT_FAM  = 6.40;   // non plafonnée
 const TAUX_CNSS_PAT_IPE  = 1.30;   // non plafonnée
+const TAUX_CNSS_PAT_TFP  = 1.60;   // non plafonnée
 const PLAFOND_CNSS = 6000;
 
 const TAUX_AMO_SALARIAL = 2.26;   // taux salarié (2.26%)
@@ -144,6 +146,7 @@ function buildCnssCotisations(
   const cnssPat1 = r2((baseCNSS * TAUX_CNSS_PAT_VIE) / 100);
   const cnssPat2 = r2((brutCotisable * TAUX_CNSS_PAT_FAM) / 100);
   const cnssPat3 = r2((brutCotisable * TAUX_CNSS_PAT_IPE) / 100);
+  const cnssPat4 = r2((brutCotisable * TAUX_CNSS_PAT_TFP) / 100);
 
   return [
     {
@@ -166,6 +169,14 @@ function buildCnssCotisations(
       tauxSalarial: 0, montantSalarial: 0,
       tauxPatronal: TAUX_CNSS_PAT_IPE,
       montantPatronal: cnssPat3,
+      patronalOnly: true,
+    },
+    {
+      code: "CNSS", libelle: "CNSS — Taxe formation professionnelle",
+      base: brutCotisable,
+      tauxSalarial: 0, montantSalarial: 0,
+      tauxPatronal: TAUX_CNSS_PAT_TFP,
+      montantPatronal: cnssPat4,
       patronalOnly: true,
     },
   ];
@@ -459,8 +470,10 @@ function calculateNetToGross(input: NetToGrossInput): PayrollResult {
   const tolerance = 0.001;
   const maxIterations = 200;
 
-  let baseMin = netCible;
-  let baseMax = netCible * 2.5;
+  // baseMin = 0 (et non netCible) car des primes non-cotisables/non-imposables
+  // peuvent rendre le salaireBase inférieur au net cible
+  let baseMin = 0;
+  let baseMax = netCible * 3;
   let bestResult: PayrollResult | null = null;
 
   for (let i = 0; i < maxIterations; i++) {
