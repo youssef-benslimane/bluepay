@@ -82,13 +82,11 @@ export interface PayrollResult {
 
 const TAUX_CNSS_SALARIAL = 4.48;
 // CNSS patronale décomposée :
-// - Vieillesse/invalidité/décès      : 8.98% plafonnée à 6 000 MAD
-// - Prestations familiales           : 6.40% non plafonnée
-// - IPE (perte d'emploi)             : 1.30% non plafonnée
-// - Taxe de formation professionnelle: 1.60% non plafonnée
-const TAUX_CNSS_PAT_VIE  = 8.98;   // plafonnée
+// - Vieillesse/invalidité/décès (+ IPE) : 8.98% plafonnée à 6 000 MAD
+// - Prestations familiales              : 6.40% non plafonnée
+// - Taxe de formation professionnelle   : 1.60% non plafonnée
+const TAUX_CNSS_PAT_VIE  = 8.98;   // plafonnée (IPE incluse)
 const TAUX_CNSS_PAT_FAM  = 6.40;   // non plafonnée
-const TAUX_CNSS_PAT_IPE  = 1.30;   // non plafonnée
 const TAUX_CNSS_PAT_TFP  = 1.60;   // non plafonnée
 const PLAFOND_CNSS = 6000;
 
@@ -134,9 +132,10 @@ export const CIMR_OPTIONS_AL_MOUNASSIB = CIMR_OPTIONS_AL_KAMIL_TCNSS.filter(
 // ─── Helpers CNSS ───────────────────────────────────────────────────────────
 
 /**
- * Retourne les deux lignes CNSS pour cotisationsDetails :
+ * Retourne les lignes CNSS pour cotisationsDetails :
  * 1. Vieillesse — salarial 4.48% + patronal 8.98% sur min(brutCotisable, 6000)
- * 2. Social (famille + IPE) — patronalOnly, 8.0% sur brutCotisable non plafonné
+ * 2. Prestations familiales — patronalOnly, 6.40% sur brutCotisable non plafonné
+ * 3. Taxe formation pro — patronalOnly, 1.60% sur brutCotisable non plafonné
  */
 function buildCnssCotisations(
   brutCotisable: number,
@@ -145,8 +144,7 @@ function buildCnssCotisations(
   const cnssSal  = r2((baseCNSS * TAUX_CNSS_SALARIAL) / 100);
   const cnssPat1 = r2((baseCNSS * TAUX_CNSS_PAT_VIE) / 100);
   const cnssPat2 = r2((brutCotisable * TAUX_CNSS_PAT_FAM) / 100);
-  const cnssPat3 = r2((brutCotisable * TAUX_CNSS_PAT_IPE) / 100);
-  const cnssPat4 = r2((brutCotisable * TAUX_CNSS_PAT_TFP) / 100);
+  const cnssPat3 = r2((brutCotisable * TAUX_CNSS_PAT_TFP) / 100);
 
   return [
     {
@@ -164,19 +162,11 @@ function buildCnssCotisations(
       patronalOnly: true,
     },
     {
-      code: "CNSS", libelle: "CNSS — IPE",
-      base: brutCotisable,
-      tauxSalarial: 0, montantSalarial: 0,
-      tauxPatronal: TAUX_CNSS_PAT_IPE,
-      montantPatronal: cnssPat3,
-      patronalOnly: true,
-    },
-    {
       code: "CNSS", libelle: "CNSS — Taxe formation professionnelle",
       base: brutCotisable,
       tauxSalarial: 0, montantSalarial: 0,
       tauxPatronal: TAUX_CNSS_PAT_TFP,
-      montantPatronal: cnssPat4,
+      montantPatronal: cnssPat3,
       patronalOnly: true,
     },
   ];
