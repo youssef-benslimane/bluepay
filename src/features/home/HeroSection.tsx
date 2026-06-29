@@ -2,18 +2,16 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Calendar, ChevronDown, Play } from "lucide-react";
+import { ArrowRight, Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { DemoBookingModal } from "./DemoBookingModal";
 
 
 
-// ─── Remplace par l'URL de ta vidéo de démo ──────────────────────────────────
-const DEMO_VIDEO_URL = "";
+const DEMO_VIDEO_URL = "/videos/demo.mp4";
 
 export function HeroSection() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [videoPlaying, setVideoPlaying] = useState(false);
 
   return (
     <section className="relative overflow-hidden bg-white">
@@ -92,42 +90,15 @@ export function HeroSection() {
               </div>
 
               {/* Zone vidéo */}
-              <div className="relative aspect-video bg-gradient-to-br from-[#0f1c3f] to-[#1a4a8a]">
-                {DEMO_VIDEO_URL && videoPlaying ? (
-                  <video
-                    src={DEMO_VIDEO_URL}
-                    autoPlay
-                    controls
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <>
-                    {/* Faux contenu d'interface */}
-                    <div className="absolute inset-0 p-6 flex flex-col gap-4 opacity-40">
-                      <div className="h-3 w-32 rounded bg-white/30" />
-                      <div className="grid grid-cols-3 gap-3 mt-2">
-                        {[...Array(6)].map((_, i) => (
-                          <div key={i} className="h-16 rounded-xl bg-white/10 border border-white/10" />
-                        ))}
-                      </div>
-                      <div className="h-2 w-full rounded bg-white/20" />
-                      <div className="h-2 w-3/4 rounded bg-white/15" />
-                    </div>
-
-                    {/* Bouton Play */}
-                    <button
-                      onClick={() => DEMO_VIDEO_URL && setVideoPlaying(true)}
-                      className="absolute inset-0 flex flex-col items-center justify-center gap-4 group"
-                    >
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm border border-white/25 transition-all group-hover:scale-110 group-hover:bg-white/25">
-                        <Play size={26} className="text-white fill-white ml-1" />
-                      </div>
-                      <span className="text-white/70 text-sm font-medium">
-                        {DEMO_VIDEO_URL ? "Voir la démo" : "Démo vidéo disponible prochainement"}
-                      </span>
-                    </button>
-                  </>
-                )}
+              <div className="relative aspect-video bg-[#0f1c3f]">
+                <video
+                  src={DEMO_VIDEO_URL}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
               </div>
             </div>
           </motion.div>

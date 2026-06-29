@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Calendar, Clock, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Calendar, Clock, CheckCircle2, ArrowRight, Loader2, CalendarPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { buildDemoCalendarLinks, downloadICS } from "@/lib/calendar";
+import { isDemoSlotBookable, isDemoSlotTooSoon } from "@/lib/demo-slots";
 
 // ─── Time slots (09:00 → 17:30, every 30 min) ────────────────────────────────
 
@@ -107,7 +109,9 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
   };
 
   const handleSlotClick = (slot: string) => {
-    if (bookedSlots.includes(slot)) return;
+    if (!selectedDate) return;
+    const dateIso = formatDateISO(selectedDate);
+    if (bookedSlots.includes(slot) || isDemoSlotTooSoon(dateIso, slot)) return;
     setSelectedSlot(slot);
     setApiError(null);
     setStep("form");
@@ -254,17 +258,33 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
                       <div className="flex justify-center py-8">
                         <Loader2 size={24} className="text-primary animate-spin" />
                       </div>
-                    ) : (
+                    ) : (() => {
+                      const dateIso = formatDateISO(selectedDate);
+                      const now = new Date();
+                      const visibleSlots = TIME_SLOTS.filter(
+                        (slot) => !isDemoSlotTooSoon(dateIso, slot, now)
+                      );
+
+                      if (visibleSlots.length === 0) {
+                        return (
+                          <p className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-6 text-center text-sm text-muted">
+                            Aucun créneau disponible pour cette date. Choisissez un autre jour.
+                          </p>
+                        );
+                      }
+
+                      return (
                       <div className="grid grid-cols-4 gap-2">
-                        {TIME_SLOTS.map((slot) => {
+                        {visibleSlots.map((slot) => {
                           const booked = bookedSlots.includes(slot);
+                          const available = isDemoSlotBookable(dateIso, slot, bookedSlots, now);
                           return (
                             <button
                               key={slot}
-                              disabled={booked}
+                              disabled={!available}
                               onClick={() => handleSlotClick(slot)}
                               className={`rounded-lg border py-2 text-sm font-medium transition-all
-                                ${booked
+                                ${!available
                                   ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed line-through"
                                   : "border-gray-200 text-dark hover:border-primary hover:bg-primary/5 hover:text-primary"
                                 }
@@ -275,7 +295,8 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
                           );
                         })}
                       </div>
-                    )}
+                      );
+                    })()}
                   </motion.div>
                 )}
 
@@ -339,7 +360,13 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
                 )}
 
                 {/* ── STEP 4: Confirmation ── */}
-                {step === "confirm" && selectedDate && selectedSlot && (
+                {step === "confirm" && selectedDate && selectedSlot && (() => {
+                  const calendar = buildDemoCalendarLinks({
+                    date: formatDateISO(selectedDate),
+                    heure: selectedSlot,
+                  });
+
+                  return (
                   <motion.div key="confirm" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}
                     className="flex flex-col items-center justify-center text-center py-8 gap-4"
                   >
@@ -355,11 +382,43 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
                       </p>
                       <p className="text-sm text-muted mt-1">Un email de confirmation vous a été envoyé.</p>
                     </div>
+                    <div className="w-full rounded-xl border border-gray-100 bg-gray-50 p-4 text-left">
+                      <p className="flex items-center gap-2 text-sm font-medium text-dark mb-3">
+                        <CalendarPlus size={16} className="text-primary" />
+                        Ajouter à votre agenda
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        <a
+                          href={calendar.google}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center rounded-lg bg-white border border-gray-200 px-4 py-2.5 text-sm font-medium text-dark hover:border-primary hover:text-primary transition-colors"
+                        >
+                          Google Calendar
+                        </a>
+                        <a
+                          href={calendar.outlook}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center rounded-lg bg-white border border-gray-200 px-4 py-2.5 text-sm font-medium text-dark hover:border-primary hover:text-primary transition-colors"
+                        >
+                          Outlook
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => downloadICS(calendar.icsContent, calendar.icsFileName)}
+                          className="flex items-center justify-center rounded-lg bg-white border border-gray-200 px-4 py-2.5 text-sm font-medium text-dark hover:border-primary hover:text-primary transition-colors"
+                        >
+                          Télécharger (.ics)
+                        </button>
+                      </div>
+                    </div>
                     <button onClick={handleClose} className="mt-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors">
                       Fermer
                     </button>
                   </motion.div>
-                )}
+                  );
+                })()}
 
               </AnimatePresence>
             </div>

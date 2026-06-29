@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { internalFromAddress, isMailConfigured, noreplyFromAddress, sendMail } from "@/lib/mail";
+import { internalFromAddress, isMailConfigured, noreplyFromAddress, sendInternalThenUserMail } from "@/lib/mail";
+import { buildDemoCalendarLinks } from "@/lib/calendar";
+import { isDemoSlotTooSoon } from "@/lib/demo-slots";
 
 const bookingSchema = z.object({
   date:      z.string().min(1),
@@ -28,57 +30,85 @@ function formatDate(dateStr: string) {
 }
 
 async function sendEmails(
-  data: { prenom: string; nom: string; email: string; telephone: string; societe?: string; heure: string },
+  data: { prenom: string; nom: string; email: string; telephone: string; societe?: string; date: string; heure: string },
   bookingId: number | null,
   dateFormatted: string
 ) {
-  await sendMail({
-    from: internalFromAddress("BluePay Démos"),
-    to: "contact@bluepay.ma",
-    replyTo: data.email,
-    subject: `🗓️ Nouvelle démo — ${dateFormatted} à ${data.heure}`,
-    html: `
-      <h2 style="color:#1a6bcc">Nouvelle réservation de démo</h2>
-      <table style="border-collapse:collapse;width:100%;font-family:sans-serif">
-        <tr><td style="padding:8px;font-weight:bold">Nom</td><td style="padding:8px">${data.prenom} ${data.nom}</td></tr>
-        <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Email</td><td style="padding:8px"><a href="mailto:${data.email}">${data.email}</a></td></tr>
-        <tr><td style="padding:8px;font-weight:bold">Téléphone</td><td style="padding:8px">${data.telephone}</td></tr>
-        <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Société</td><td style="padding:8px">${data.societe ?? "—"}</td></tr>
-        <tr><td style="padding:8px;font-weight:bold">Date</td><td style="padding:8px">${dateFormatted}</td></tr>
-        <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Heure</td><td style="padding:8px">${data.heure}</td></tr>
-      </table>
-      ${bookingId ? `<p style="color:#888;font-size:12px;margin-top:24px">ID réservation : #${bookingId}</p>` : ""}
-    `,
+  const fullName = `${data.prenom} ${data.nom}`;
+  const calendar = buildDemoCalendarLinks({
+    date: data.date,
+    heure: data.heure,
   });
 
-  await sendMail({
-    from: noreplyFromAddress("BluePay"),
-    to: data.email,
-    replyTo: "contact@bluepay.ma",
-    subject: `✅ Votre démo BluePay est confirmée — ${dateFormatted} à ${data.heure}`,
-    html: `
-      <div style="font-family:sans-serif;max-width:560px;margin:auto">
-        <h2 style="color:#1a6bcc">Votre démo est confirmée !</h2>
-        <p>Bonjour <strong>${data.prenom}</strong>,</p>
-        <p>Votre démonstration BluePay est bien enregistrée. Voici un récapitulatif :</p>
-        <div style="background:#f0f7ff;border-left:4px solid #1a6bcc;padding:16px;border-radius:4px;margin:16px 0">
-          <p style="margin:4px 0"><strong>📅 Date :</strong> ${dateFormatted}</p>
-          <p style="margin:4px 0"><strong>🕐 Heure :</strong> ${data.heure}</p>
-          <p style="margin:4px 0"><strong>⏱ Durée :</strong> 30 minutes</p>
+  await sendInternalThenUserMail(
+    {
+      from: internalFromAddress("BluePay Démos"),
+      to: "contact@bluepay.ma",
+      replyTo: data.email,
+      subject: `Nouvelle demo — ${dateFormatted} a ${data.heure}`,
+      html: `
+        <h2 style="color:#1a6bcc">Nouvelle réservation de démo</h2>
+        <table style="border-collapse:collapse;width:100%;font-family:sans-serif">
+          <tr><td style="padding:8px;font-weight:bold">Nom</td><td style="padding:8px">${fullName}</td></tr>
+          <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Email</td><td style="padding:8px"><a href="mailto:${data.email}">${data.email}</a></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Téléphone</td><td style="padding:8px">${data.telephone}</td></tr>
+          <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Société</td><td style="padding:8px">${data.societe ?? "—"}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Date</td><td style="padding:8px">${dateFormatted}</td></tr>
+          <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Heure</td><td style="padding:8px">${data.heure}</td></tr>
+        </table>
+        ${bookingId ? `<p style="color:#888;font-size:12px;margin-top:24px">ID réservation : #${bookingId}</p>` : ""}
+      `,
+    },
+    {
+      from: noreplyFromAddress("BluePay"),
+      to: data.email,
+      replyTo: "contact@bluepay.ma",
+      subject: `Confirmation demo BluePay — ${dateFormatted} a ${data.heure}`,
+      text: `Bonjour ${fullName},\n\nVotre demonstration BluePay est confirmee le ${dateFormatted} a ${data.heure} (30 min).\n\nAjouter a votre agenda :\nGoogle Calendar : ${calendar.google}\nOutlook : ${calendar.outlook}\n\nBluePay — contact@bluepay.ma`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:auto">
+          <h2 style="color:#1a6bcc">Votre démo est confirmée !</h2>
+          <p>Bonjour <strong>${fullName}</strong>,</p>
+          <p>Votre démonstration BluePay est bien enregistrée. Voici un récapitulatif :</p>
+          <div style="background:#f0f7ff;border-left:4px solid #1a6bcc;padding:16px;border-radius:4px;margin:16px 0">
+            <p style="margin:4px 0"><strong>Date :</strong> ${dateFormatted}</p>
+            <p style="margin:4px 0"><strong>Heure :</strong> ${data.heure}</p>
+            <p style="margin:4px 0"><strong>Durée :</strong> 30 minutes</p>
+          </div>
+          <p style="margin:16px 0 8px;font-weight:bold">Ajouter à votre agenda :</p>
+          <p style="margin:8px 0">
+            <a href="${calendar.google}" style="display:inline-block;margin:0 8px 8px 0;padding:10px 16px;background:#1a6bcc;color:#fff;text-decoration:none;border-radius:6px;font-size:14px">Google Calendar</a>
+            <a href="${calendar.outlook}" style="display:inline-block;margin:0 8px 8px 0;padding:10px 16px;background:#0078d4;color:#fff;text-decoration:none;border-radius:6px;font-size:14px">Outlook</a>
+          </p>
+          <p style="color:#666;font-size:13px">Un fichier calendrier (.ics) est aussi joint à cet email pour Apple Calendar et autres applications.</p>
+          <p>Notre équipe vous contactera avant la démo pour vous envoyer le lien de la réunion.</p>
+          <p>Pour toute question : <a href="mailto:contact@bluepay.ma">contact@bluepay.ma</a> · +212 6 11 29 97 03</p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0"/>
+          <p style="color:#888;font-size:12px">BluePay · <a href="https://bluepay.ma">bluepay.ma</a></p>
         </div>
-        <p>Notre équipe vous contactera avant la démo pour vous envoyer le lien de la réunion.</p>
-        <p>Pour toute question : <a href="mailto:contact@bluepay.ma">contact@bluepay.ma</a> · +212 6 11 29 97 03</p>
-        <hr style="border:none;border-top:1px solid #eee;margin:24px 0"/>
-        <p style="color:#888;font-size:12px">BluePay · <a href="https://bluepay.ma">bluepay.ma</a></p>
-      </div>
-    `,
-  });
+      `,
+      attachments: [
+        {
+          filename: calendar.icsFileName,
+          content: calendar.icsContent,
+          contentType: "text/calendar; charset=utf-8",
+        },
+      ],
+    }
+  );
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const data = bookingSchema.parse(body);
+
+    if (isDemoSlotTooSoon(data.date, data.heure)) {
+      return NextResponse.json(
+        { success: false, message: "Ce créneau n'est plus disponible. Veuillez en choisir un autre." },
+        { status: 400 }
+      );
+    }
 
     const dateFormatted = formatDate(data.date);
     let bookingId: number | null = null;
