@@ -24,8 +24,8 @@ export default function SimulateurPage() {
         subtitle="Estimez votre salaire net ou calculez le brut correspondant. Simulation basée sur les taux CNSS, AMO et le barème IR marocain en vigueur."
       />
 
-      <section className="py-20 lg:py-28">
-        <Container>
+      <section className="overflow-x-hidden py-20 lg:py-28">
+        <Container className="min-w-0">
           <SimulatorTabsClient />
         </Container>
       </section>

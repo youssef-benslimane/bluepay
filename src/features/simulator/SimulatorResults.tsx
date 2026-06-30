@@ -79,10 +79,10 @@ export function SimulatorResults({ result, isNetToBrut = false }: SimulatorResul
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col gap-4"
+      className="flex min-w-0 max-w-full flex-col gap-4"
     >
       {/* ── 3 cartes de synthèse ────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-white p-3 text-center">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1">
             Salaire Brut
@@ -118,8 +118,8 @@ export function SimulatorResults({ result, isNetToBrut = false }: SimulatorResul
           </p>
         </div>
 
-        <div className="px-4 py-2 overflow-x-auto">
-          <table className="w-full">
+        <div className="max-w-full overflow-x-auto px-4 py-2">
+          <table className="w-full min-w-[36rem]">
             <tbody>
               {/* Base */}
               <TableRow label="Salaire de base" value={result.salaireBase} />
@@ -209,8 +209,8 @@ export function SimulatorResults({ result, isNetToBrut = false }: SimulatorResul
           </p>
         </div>
 
-        <div className="px-4 py-2 overflow-x-auto">
-          <table className="w-full">
+        <div className="max-w-full overflow-x-auto px-4 py-2">
+          <table className="w-full min-w-[36rem]">
             <tbody>
               {result.cotisationsDetails.length > 0 && (
                 <tr className="border-b border-border/50">

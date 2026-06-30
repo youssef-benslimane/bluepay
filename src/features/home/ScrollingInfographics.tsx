@@ -18,7 +18,7 @@ const RH_STEPS = [
 
 function GestionRHCard() {
   return (
-    <div className="flex h-full flex-col gap-6 rounded-2xl border border-border bg-white p-8"
+    <div className="flex h-full flex-col gap-6 rounded-2xl border border-border bg-white p-5 sm:p-8"
       style={{ boxShadow: "0 20px 60px -10px rgba(0,0,0,0.12), 0 8px 24px -6px rgba(0,0,0,0.08)" }}
     >
       {/* Header */}
@@ -81,7 +81,7 @@ const PME_ITEMS = [
 
 function ErpPmeCard() {
   return (
-    <div className="flex h-full flex-col gap-6 rounded-2xl border border-border bg-white p-8"
+    <div className="flex h-full flex-col gap-6 rounded-2xl border border-border bg-white p-5 sm:p-8"
       style={{ boxShadow: "0 20px 60px -10px rgba(0,0,0,0.12), 0 8px 24px -6px rgba(0,0,0,0.08)" }}
     >
       {/* Header */}
@@ -91,7 +91,7 @@ function ErpPmeCard() {
       </div>
 
       {/* Deux colonnes */}
-      <div className="grid flex-1 grid-cols-2 gap-5">
+      <div className="grid flex-1 grid-cols-1 gap-5 sm:grid-cols-2">
         {/* ERP */}
         <div className="flex flex-col gap-4">
           <div className="rounded-lg bg-blue-600 px-3 py-2 text-center">
@@ -134,11 +134,11 @@ function ErpPmeCard() {
 export function ScrollingInfographics() {
   return (
     <section className="bg-white py-16">
-      <div className="mx-auto flex max-w-5xl items-stretch gap-8 px-4 lg:px-8">
-        <div className="flex-1">
+      <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-8 px-4 md:flex-row lg:px-8">
+        <div className="min-w-0 flex-1">
           <GestionRHCard />
         </div>
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <ErpPmeCard />
         </div>
       </div>

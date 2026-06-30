@@ -130,7 +130,7 @@ export function SimulatorNetBrut() {
   };
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
+    <div className="grid min-w-0 gap-8 lg:grid-cols-[1fr_1.1fr]">
       {/* ── Formulaire ─────────────────────────────────────────── */}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
@@ -305,7 +305,7 @@ export function SimulatorNetBrut() {
       </form>
 
       {/* ── Résultats ──────────────────────────────────────────── */}
-      <div>
+      <div className="min-w-0">
         {result ? (
           <SimulatorResults result={result} isNetToBrut />
         ) : (

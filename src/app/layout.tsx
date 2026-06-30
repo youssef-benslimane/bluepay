@@ -73,7 +73,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${outfit.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col overflow-x-hidden font-sans">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
