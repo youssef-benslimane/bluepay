@@ -63,4 +63,5 @@ export interface ContactFormData {
   email: string;
   message: string;
   plan?: string;
+  recaptchaToken?: string;
 }

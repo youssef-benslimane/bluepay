@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Calendar, Clock, CheckCircle2, ArrowRight, Loader2, CalendarPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { buildDemoCalendarLinks, downloadICS } from "@/lib/calendar";
 import { isDemoSlotBookable, isDemoSlotTooSoon } from "@/lib/demo-slots";
+import { RecaptchaField, isRecaptchaEnabled, type RecaptchaFieldRef } from "@/components/ui/RecaptchaField";
 
 // ─── Time slots (09:00 → 17:30, every 30 min) ────────────────────────────────
 
@@ -78,6 +79,7 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError]     = useState<string | null>(null);
+  const recaptchaRef = useRef<RecaptchaFieldRef>(null);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -119,6 +121,16 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
 
   const onSubmit = async (data: FormData) => {
     if (!selectedDate || !selectedSlot) return;
+
+    const recaptchaToken = isRecaptchaEnabled()
+      ? recaptchaRef.current?.getToken() ?? ""
+      : undefined;
+
+    if (isRecaptchaEnabled() && !recaptchaToken) {
+      setApiError("Veuillez confirmer que vous n'êtes pas un robot.");
+      return;
+    }
+
     setSubmitting(true);
     setApiError(null);
     try {
@@ -129,16 +141,19 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
           ...data,
           date:  formatDateISO(selectedDate),
           heure: selectedSlot,
+          recaptchaToken,
         }),
       });
       const result = await res.json();
       if (!res.ok) {
         setApiError(result.message ?? "Une erreur s'est produite.");
+        recaptchaRef.current?.reset();
         return;
       }
       setStep("confirm");
     } catch {
       setApiError("Impossible de contacter le serveur. Vérifiez votre connexion.");
+      recaptchaRef.current?.reset();
     } finally {
       setSubmitting(false);
     }
@@ -153,6 +168,7 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
       setBookedSlots([]);
       setApiError(null);
       reset();
+      recaptchaRef.current?.reset();
     }, 300);
   };
 
@@ -347,6 +363,7 @@ export function DemoBookingModal({ isOpen, onClose }: Props) {
                         <input {...register("telephone")} type="tel" placeholder="Téléphone *" className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all ${errors.telephone ? "border-red-300" : "border-gray-200"}`} />
                         {errors.telephone && <p className="mt-1 text-xs text-red-500">{errors.telephone.message}</p>}
                       </div>
+                      <RecaptchaField ref={recaptchaRef} className="flex justify-center" />
                       <button
                         type="submit"
                         disabled={submitting}

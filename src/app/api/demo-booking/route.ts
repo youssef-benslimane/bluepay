@@ -3,6 +3,7 @@ import { z } from "zod";
 import { internalFromAddress, isMailConfigured, noreplyFromAddress, sendInternalThenUserMail } from "@/lib/mail";
 import { buildDemoCalendarLinks } from "@/lib/calendar";
 import { isDemoSlotTooSoon } from "@/lib/demo-slots";
+import { getRequestIp, verifyRecaptchaToken } from "@/lib/recaptcha";
 
 const bookingSchema = z.object({
   date:      z.string().min(1),
@@ -12,6 +13,7 @@ const bookingSchema = z.object({
   email:     z.string().email(),
   telephone: z.string().min(1),
   societe:   z.string().optional(),
+  recaptchaToken: z.string().optional(),
 });
 
 // Lazy import Prisma — n'échoue pas si SQLite n'est pas disponible
@@ -102,6 +104,14 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const data = bookingSchema.parse(body);
+
+    const captcha = await verifyRecaptchaToken(data.recaptchaToken, getRequestIp(request));
+    if (!captcha.success) {
+      return NextResponse.json(
+        { success: false, message: captcha.message ?? "Vérification de sécurité échouée." },
+        { status: 400 }
+      );
+    }
 
     if (isDemoSlotTooSoon(data.date, data.heure)) {
       return NextResponse.json(

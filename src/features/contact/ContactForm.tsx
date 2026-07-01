@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,6 +8,7 @@ import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { RecaptchaField, isRecaptchaEnabled, type RecaptchaFieldRef } from "@/components/ui/RecaptchaField";
 import { submitContactForm } from "@/services/contact";
 
 const schema = z.object({
@@ -35,6 +36,7 @@ interface ContactFormProps {
 export function ContactForm({ defaultPlan }: ContactFormProps) {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [statusMessage, setStatusMessage] = useState("");
+  const recaptchaRef = useRef<RecaptchaFieldRef>(null);
 
   const {
     register,
@@ -48,10 +50,26 @@ export function ContactForm({ defaultPlan }: ContactFormProps) {
   const onSubmit = async (data: FormData) => {
     try {
       setStatus("idle");
-      const result = await submitContactForm({ ...data, plan: defaultPlan });
+
+      const recaptchaToken = isRecaptchaEnabled()
+        ? recaptchaRef.current?.getToken() ?? ""
+        : undefined;
+
+      if (isRecaptchaEnabled() && !recaptchaToken) {
+        setStatus("error");
+        setStatusMessage("Veuillez confirmer que vous n'êtes pas un robot.");
+        return;
+      }
+
+      const result = await submitContactForm({
+        ...data,
+        plan: defaultPlan,
+        recaptchaToken,
+      });
       setStatus("success");
       setStatusMessage(result.message);
       reset();
+      recaptchaRef.current?.reset();
     } catch (err) {
       setStatus("error");
       setStatusMessage(
@@ -59,6 +77,7 @@ export function ContactForm({ defaultPlan }: ContactFormProps) {
           ? err.message
           : "Une erreur s'est produite. Veuillez réessayer."
       );
+      recaptchaRef.current?.reset();
     }
   };
 
@@ -137,6 +156,8 @@ export function ContactForm({ defaultPlan }: ContactFormProps) {
         error={errors.message?.message}
         {...register("message")}
       />
+
+      <RecaptchaField ref={recaptchaRef} className="flex justify-center sm:justify-start" />
 
       <Button
         type="submit"

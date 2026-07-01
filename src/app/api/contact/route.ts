@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { internalFromAddress, isMailConfigured, noreplyFromAddress, sendInternalThenUserMail } from "@/lib/mail";
+import { getRequestIp, verifyRecaptchaToken } from "@/lib/recaptcha";
 
 const contactSchema = z.object({
   prenom:    z.string().min(2),
@@ -10,6 +11,7 @@ const contactSchema = z.object({
   email:     z.string().email(),
   message:   z.string().min(10).max(1000),
   plan:      z.string().optional(),
+  recaptchaToken: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -17,6 +19,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const data = contactSchema.parse(body);
     const fullName = `${data.prenom} ${data.nom}`;
+
+    const captcha = await verifyRecaptchaToken(data.recaptchaToken, getRequestIp(request));
+    if (!captcha.success) {
+      return NextResponse.json(
+        { success: false, message: captcha.message ?? "Vérification de sécurité échouée." },
+        { status: 400 }
+      );
+    }
 
     if (!isMailConfigured()) {
       console.error("Contact email error: SMTP_PASS non configuré");
