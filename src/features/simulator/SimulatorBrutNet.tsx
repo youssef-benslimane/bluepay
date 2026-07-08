@@ -15,6 +15,7 @@ import {
 } from "./SimulatorEngine";
 import type { PayrollResult, ProduitCimr } from "./SimulatorEngine";
 import { formatCurrency } from "@/lib/utils";
+import { parseDecimalField, parseIntegerField } from "@/lib/numeric-input";
 
 // ─── Schéma ────────────────────────────────────────────────────────────────
 
@@ -130,13 +131,13 @@ export function SimulatorBrutNet() {
 
         {/* Salaire de base */}
         <Input
+          selectOnFocus
           label="Salaire de base mensuel ETP (MAD)"
-          type="number"
-          step="any"
+          numeric="decimal"
           placeholder="Ex : 8 000"
           required
           error={errors.salaireBase?.message}
-          {...register("salaireBase", { valueAsNumber: true })}
+          {...register("salaireBase", { setValueAs: parseDecimalField })}
         />
 
         {/* Paramètres */}
@@ -147,26 +148,28 @@ export function SimulatorBrutNet() {
 
           <div className="grid grid-cols-2 gap-3">
             <Input
+              selectOnFocus
               label="Taux d'activité (%)"
-              type="number"
+              numeric="integer"
               placeholder="100"
-              {...register("tauxActivite", { valueAsNumber: true })}
+              {...register("tauxActivite", { setValueAs: parseIntegerField })}
             />
             <Input
+              selectOnFocus
               label="Personnes à charge"
-              type="number"
+              numeric="integer"
               placeholder="0"
-              {...register("nombrePersonnesACharge", { valueAsNumber: true })}
+              {...register("nombrePersonnesACharge", { setValueAs: parseIntegerField })}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <Input
+              selectOnFocus
               label="Retenues brutes (MAD)"
-              type="number"
-              step="any"
+              numeric="decimal"
               placeholder="0"
-              {...register("retenuesBrute", { valueAsNumber: true })}
+              {...register("retenuesBrute", { setValueAs: parseDecimalField })}
             />
           </div>
 
@@ -216,11 +219,11 @@ export function SimulatorBrutNet() {
             <div key={field.id} className="flex items-end gap-2">
               <div className="flex-1">
                 <Input
+                  selectOnFocus
                   label={idx === 0 ? "Montant (MAD)" : undefined}
-                  type="number"
-                  step="any"
+                  numeric="decimal"
                   placeholder="0"
-                  {...register(`primes.${idx}.montant`, { valueAsNumber: true })}
+                  {...register(`primes.${idx}.montant`, { setValueAs: parseDecimalField })}
                 />
               </div>
               <label className={`flex items-center gap-1 text-xs text-muted cursor-pointer ${idx === 0 ? "mb-1" : ""} pb-2.5`}>
@@ -260,11 +263,11 @@ export function SimulatorBrutNet() {
             <div key={field.id} className="flex items-end gap-2">
               <div className="flex-1">
                 <Input
+                  selectOnFocus
                   label={idx === 0 ? "Montant (MAD)" : undefined}
-                  type="number"
-                  step="any"
+                  numeric="decimal"
                   placeholder="0"
-                  {...register(`avantages.${idx}.montant`, { valueAsNumber: true })}
+                  {...register(`avantages.${idx}.montant`, { setValueAs: parseDecimalField })}
                 />
               </div>
               <label className={`flex items-center gap-1 text-xs text-muted cursor-pointer ${idx === 0 ? "mb-1" : ""} pb-2.5`}>
