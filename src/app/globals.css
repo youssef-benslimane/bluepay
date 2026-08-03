@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand Colors — Innovex/BluePay palette */
+  /* Brand Colors - Innovex/BluePay palette */
   --color-primary: #1b7dbb;
   --color-primary-dark: #155f94;
   --color-primary-light: #3d96cc;
@@ -63,7 +63,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Gradient utility classes — matches Innovex BluePay gradients */
+/* Gradient utility classes - matches Innovex BluePay gradients */
 .gradient-hero {
   background: linear-gradient(135deg, #2e2960 0%, #1b7dbb 100%);
 }
@@ -105,7 +105,7 @@ body {
   background-color: #ffffff;
 }
 
-/* Primary button — matches Innovex .btn */
+/* Primary button - matches Innovex .btn */
 .btn {
   background: #1b7dbb;
   color: white;

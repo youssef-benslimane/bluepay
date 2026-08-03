@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== "production") {
   config({ path: ".env" });
 }
 
-// prisma generate n'ouvre pas de connexion — une URL placeholder suffit au build Vercel
+// prisma generate n'ouvre pas de connexion - une URL placeholder suffit au build Vercel
 const databaseUrl =
   process.env.DIRECT_URL ??
   process.env.DATABASE_URL ??

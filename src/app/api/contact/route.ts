@@ -44,14 +44,14 @@ export async function POST(request: NextRequest) {
           from: internalFromAddress("BluePay Contact"),
           to: "contact@bluepay.ma",
           replyTo: data.email,
-          subject: `Nouveau message — ${fullName}${data.societe ? ` (${data.societe})` : ""}`,
+          subject: `Nouveau message - ${fullName}${data.societe ? ` (${data.societe})` : ""}`,
           html: `
             <h2 style="color:#1a6bcc">Nouveau message via le formulaire de contact</h2>
             <table style="border-collapse:collapse;width:100%;font-family:sans-serif">
               <tr><td style="padding:8px;font-weight:bold">Nom</td><td style="padding:8px">${fullName}</td></tr>
               <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Email</td><td style="padding:8px"><a href="mailto:${data.email}">${data.email}</a></td></tr>
               <tr><td style="padding:8px;font-weight:bold">Téléphone</td><td style="padding:8px">${data.telephone}</td></tr>
-              <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Société</td><td style="padding:8px">${data.societe ?? "—"}</td></tr>
+              <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Société</td><td style="padding:8px">${data.societe ?? "-"}</td></tr>
               ${planInfo}
               <tr><td style="padding:8px;font-weight:bold;vertical-align:top">Message</td><td style="padding:8px">${data.message.replace(/\n/g, "<br/>")}</td></tr>
             </table>
@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
           from: noreplyFromAddress("BluePay"),
           to: data.email,
           replyTo: "contact@bluepay.ma",
-          subject: "Confirmation — votre message BluePay a bien ete recu",
-          text: `Bonjour ${fullName},\n\nMerci de nous avoir contactes. Notre equipe vous repondra dans les plus brefs delais.\n\nBluePay — contact@bluepay.ma — +212 6 11 29 97 03`,
+          subject: "Confirmation - votre message BluePay a bien ete recu",
+          text: `Bonjour ${fullName},\n\nMerci de nous avoir contactes. Notre equipe vous repondra dans les plus brefs delais.\n\nBluePay - contact@bluepay.ma - +212 6 11 29 97 03`,
           html: `
             <div style="font-family:sans-serif;max-width:560px;margin:auto">
               <h2 style="color:#1a6bcc">Votre message a bien été reçu</h2>

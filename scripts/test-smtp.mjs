@@ -19,7 +19,7 @@ console.log(`Serveur : ${host}:${port}\n`);
 
 for (const { label, user, pass } of accounts) {
   if (!pass) {
-    console.log(`❌ ${label} — mot de passe non configuré`);
+    console.log(`❌ ${label} - mot de passe non configuré`);
     continue;
   }
 
@@ -33,8 +33,8 @@ for (const { label, user, pass } of accounts) {
 
   try {
     await transporter.verify();
-    console.log(`✅ ${label} (${user}) — connexion OK`);
+    console.log(`✅ ${label} (${user}) - connexion OK`);
   } catch (err) {
-    console.log(`❌ ${label} (${user}) — ${err.message}`);
+    console.log(`❌ ${label} (${user}) - ${err.message}`);
   }
 }

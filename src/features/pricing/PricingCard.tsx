@@ -40,7 +40,7 @@ export function PricingCard({ plan, index }: PricingCardProps) {
           </div>
         )}
 
-        {/* Header — hauteur fixe pour aligner le bouton */}
+        {/* Header - hauteur fixe pour aligner le bouton */}
         <div className="mb-6 flex flex-col gap-2 min-h-[148px]">
           <h3 className="text-xl font-bold text-dark">{plan.name}</h3>
           <p className="text-sm text-muted">{plan.tagline}</p>

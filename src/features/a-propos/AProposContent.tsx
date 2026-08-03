@@ -33,7 +33,7 @@ const PROBLEMS_SOLVED = [
 export function AProposContent() {
   return (
     <main className="pt-20 lg:pt-24">
-      {/* Hero — Qu'est-ce que BluePay ? */}
+      {/* Hero - Qu'est-ce que BluePay ? */}
       <section className="bg-gradient-to-br from-primary/5 via-white to-blue-50/30 py-20 lg:py-28">
         <Container>
           <div className="grid items-center gap-16 lg:grid-cols-2">
@@ -75,7 +75,7 @@ export function AProposContent() {
         </Container>
       </section>
 
-      {/* Avantages — grille uniforme 6 tuiles */}
+      {/* Avantages - grille uniforme 6 tuiles */}
       <section className="py-20 lg:py-28">
         <Container>
           <motion.div

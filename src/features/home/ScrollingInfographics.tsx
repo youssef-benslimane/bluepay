@@ -54,7 +54,7 @@ function GestionRHCard() {
       <div className="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-2.5">
         <BadgeCheck size={15} className="shrink-0 text-green-600" />
         <span className="text-xs font-medium text-green-700">
-          Conforme CNSS, AMO, CIMR & IR — Code du travail marocain
+          Conforme CNSS, AMO, CIMR & IR - Code du travail marocain
         </span>
       </div>
     </div>

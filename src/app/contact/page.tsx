@@ -9,11 +9,11 @@ import { ContactPageClient } from "@/features/contact/ContactPageClient";
 import { contactPageJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
-  title: "Contactez-nous — Demande de Démo",
+  title: "Contactez-nous - Demande de Démo",
   description:
     "Prenez contact avec l'équipe BluePay pour une démonstration personnalisée ou un devis sur mesure. Réponse sous 24h.",
   openGraph: {
-    title: "Contactez BluePay — Demande de Démo",
+    title: "Contactez BluePay - Demande de Démo",
     description:
       "Discutons de votre projet de gestion de paie marocaine. Démonstration gratuite disponible.",
     images: [{ url: "/og/contact.png", width: 1200, height: 630 }],

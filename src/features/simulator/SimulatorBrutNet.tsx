@@ -187,7 +187,7 @@ export function SimulatorBrutNet() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-dark">Taux (%)</label>
                 <select className={sel} {...register("cimrTauxOption")}>
-                  <option value="">— Choisir —</option>
+                  <option value="">- Choisir -</option>
                   {cimrOptions.map((o) => (
                     <option key={o.key} value={o.key}>
                       {o.salarial}% sal. / {o.patronal}% pat.

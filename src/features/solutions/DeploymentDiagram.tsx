@@ -61,7 +61,7 @@ export function SaasDiagram() {
         </motion.div>
 
         <p className="text-center text-xs text-muted italic">
-          Aucune installation requise — accès immédiat depuis n&apos;importe quel navigateur
+          Aucune installation requise - accès immédiat depuis n&apos;importe quel navigateur
         </p>
       </div>
     </div>
@@ -118,7 +118,7 @@ export function OnPremiseDiagram() {
         </div>
 
         <p className="text-center text-xs text-muted italic">
-          Installation sur vos serveurs — vos données ne quittent jamais votre infrastructure
+          Installation sur vos serveurs - vos données ne quittent jamais votre infrastructure
         </p>
       </div>
     </div>

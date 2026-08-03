@@ -4,11 +4,11 @@ import { PageHero } from "@/features/shared/PageHero";
 import { SimulatorTabsClient } from "@/features/simulator/SimulatorTabsClient";
 
 export const metadata: Metadata = {
-  title: "Simulateur de Paie Marocain — CNSS, AMO, IR",
+  title: "Simulateur de Paie Marocain - CNSS, AMO, IR",
   description:
     "Calculez votre salaire net à partir du brut ou estimez le brut à partir du net. Simulation gratuite et instantanée intégrant CNSS, AMO et IR marocain.",
   openGraph: {
-    title: "Simulateur de Paie Marocain — BluePay",
+    title: "Simulateur de Paie Marocain - BluePay",
     description:
       "Simulation gratuite du salaire net marocain : CNSS, AMO, IR calculés automatiquement.",
     images: [{ url: "/og/simulateur.png", width: 1200, height: 630 }],

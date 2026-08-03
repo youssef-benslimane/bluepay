@@ -12,7 +12,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: "BluePay — Logiciel de Paie Marocain",
+    default: "BluePay - Logiciel de Paie Marocain",
     template: "%s | BluePay",
   },
   description:
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     locale: "fr_MA",
     url: "https://bluepay.ma",
     siteName: "BluePay",
-    title: "BluePay — Logiciel de Paie Marocain",
+    title: "BluePay - Logiciel de Paie Marocain",
     description:
       "Solution SaaS de gestion de la paie conçue pour les entreprises marocaines. CNSS, AMO, IR automatisés.",
     images: [
@@ -42,13 +42,13 @@ export const metadata: Metadata = {
         url: "/og/home.png",
         width: 1200,
         height: 630,
-        alt: "BluePay — Logiciel de Paie Marocain",
+        alt: "BluePay - Logiciel de Paie Marocain",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BluePay — Logiciel de Paie Marocain",
+    title: "BluePay - Logiciel de Paie Marocain",
     description:
       "Solution SaaS de gestion de la paie conçue pour les entreprises marocaines.",
     images: ["/og/home.png"],

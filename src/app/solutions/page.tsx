@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description:
     "Choisissez le mode de déploiement BluePay adapté à votre entreprise : solution Cloud SaaS hébergée ou installation On-Premise sur votre infrastructure.",
   openGraph: {
-    title: "Nos Solutions SaaS & On-Premise — BluePay",
+    title: "Nos Solutions SaaS & On-Premise - BluePay",
     description:
       "Cloud SaaS ou On-Premise : comparez les deux modes de déploiement BluePay.",
     images: [{ url: "/og/solutions.png", width: 1200, height: 630 }],

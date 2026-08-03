@@ -133,9 +133,9 @@ export const CIMR_OPTIONS_AL_MOUNASSIB = CIMR_OPTIONS_AL_KAMIL_TCNSS.filter(
 
 /**
  * Retourne les lignes CNSS pour cotisationsDetails :
- * 1. Vieillesse — salarial 4.48% + patronal 8.98% sur min(brutCotisable, 6000)
- * 2. Prestations familiales — patronalOnly, 6.40% sur brutCotisable non plafonné
- * 3. Taxe formation pro — patronalOnly, 1.60% sur brutCotisable non plafonné
+ * 1. Vieillesse - salarial 4.48% + patronal 8.98% sur min(brutCotisable, 6000)
+ * 2. Prestations familiales - patronalOnly, 6.40% sur brutCotisable non plafonné
+ * 3. Taxe formation pro - patronalOnly, 1.60% sur brutCotisable non plafonné
  */
 function buildCnssCotisations(
   brutCotisable: number,
@@ -148,13 +148,13 @@ function buildCnssCotisations(
 
   return [
     {
-      code: "CNSS", libelle: "CNSS — Vieillesse",
+      code: "CNSS", libelle: "CNSS - Vieillesse",
       base: baseCNSS,
       tauxSalarial: TAUX_CNSS_SALARIAL, montantSalarial: cnssSal,
       tauxPatronal: TAUX_CNSS_PAT_VIE,  montantPatronal: cnssPat1,
     },
     {
-      code: "CNSS", libelle: "CNSS — Prestations familiales",
+      code: "CNSS", libelle: "CNSS - Prestations familiales",
       base: brutCotisable,
       tauxSalarial: 0, montantSalarial: 0,
       tauxPatronal: TAUX_CNSS_PAT_FAM,
@@ -162,7 +162,7 @@ function buildCnssCotisations(
       patronalOnly: true,
     },
     {
-      code: "CNSS", libelle: "CNSS — Taxe formation professionnelle",
+      code: "CNSS", libelle: "CNSS - Taxe formation professionnelle",
       base: brutCotisable,
       tauxSalarial: 0, montantSalarial: 0,
       tauxPatronal: TAUX_CNSS_PAT_TFP,

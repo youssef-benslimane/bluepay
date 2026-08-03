@@ -11,7 +11,7 @@ export function MapEmbed() {
         allowFullScreen
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
-        title="Localisation BluePay — Casablanca, Maroc"
+        title="Localisation BluePay - Casablanca, Maroc"
       />
     </div>
   );

@@ -97,7 +97,7 @@ export function RolesSection() {
           <SectionTitle
             badge="Fonctionnalités par rôle"
             title="Une plateforme adaptée à chaque profil"
-            subtitle="Configurateur, Responsable RH, Administrateur ou Employé — chaque profil dispose de son espace dédié dans BluePay."
+            subtitle="Configurateur, Responsable RH, Administrateur ou Employé - chaque profil dispose de son espace dédié dans BluePay."
           />
         </motion.div>
 

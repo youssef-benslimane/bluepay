@@ -1,17 +1,62 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Calendar, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Calendar, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { DemoBookingModal } from "./DemoBookingModal";
 
+const SLIDE_INTERVAL_MS = 5000;
 
-
-const DEMO_VIDEO_URL = "/videos/demo.mp4";
+const DEMO_SLIDES = [
+  {
+    src: "/images/demo-slides/01-documents.png",
+    alt: "Validation des demandes de documents — BluePay",
+  },
+  {
+    src: "/images/demo-slides/02-salaries.png",
+    alt: "Gestion des salariés — BluePay",
+  },
+  {
+    src: "/images/demo-slides/03-calcul-paie.png",
+    alt: "Calcul de la paie — BluePay",
+  },
+  {
+    src: "/images/demo-slides/04-conges.png",
+    alt: "Demandes de congés — BluePay",
+  },
+  {
+    src: "/images/demo-slides/05-utilisateurs.png",
+    alt: "Gestion des utilisateurs — BluePay",
+  },
+  {
+    src: "/images/demo-slides/06-absences.png",
+    alt: "Types d'absence — BluePay",
+  },
+] as const;
 
 export function HeroSection() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [autoPlayKey, setAutoPlayKey] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSlideIndex((i) => (i + 1) % DEMO_SLIDES.length);
+    }, SLIDE_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [autoPlayKey]);
+
+  const goTo = (index: number) => {
+    setSlideIndex(index);
+    setAutoPlayKey((k) => k + 1);
+  };
+
+  const goPrev = () =>
+    goTo((slideIndex - 1 + DEMO_SLIDES.length) % DEMO_SLIDES.length);
+
+  const goNext = () => goTo((slideIndex + 1) % DEMO_SLIDES.length);
 
   return (
     <section className="relative overflow-hidden bg-white">
@@ -31,9 +76,9 @@ export function HeroSection() {
 
       {/* ── Layout pleine largeur ─────────────────────────────────────── */}
       <div className="relative z-10 flex min-h-screen items-center">
-        <div className="grid w-full grid-cols-1 lg:grid-cols-2 items-center">
+        <div className="grid w-full grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] items-center gap-4 lg:min-h-screen">
 
-          {/* ── Colonne gauche : texte — paddé depuis le bord ─────────── */}
+          {/* ── Colonne gauche : texte - paddé depuis le bord ─────────── */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -71,34 +116,70 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* ── Colonne droite : vidéo — flush contre le bord droit ───── */}
+          {/* ── Colonne droite : carrousel plein cadre ────────────────── */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
-            className="hidden lg:flex h-full items-center px-8 sm:px-12 lg:px-16 xl:px-24 py-16"
+            className="hidden lg:flex h-full min-h-screen items-center px-8 sm:px-12 lg:px-16 xl:px-24 pt-28 pb-16"
           >
-            {/* Carte vidéo */}
-            <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5">
+            <div className="relative flex h-[calc(100svh-11rem)] w-full flex-col">
+              <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-[#e8eef5] shadow-2xl ring-1 ring-black/5">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={slideIndex}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.45, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={DEMO_SLIDES[slideIndex].src}
+                      alt={DEMO_SLIDES[slideIndex].alt}
+                      fill
+                      sizes="(min-width: 1024px) 60vw, 100vw"
+                      className="object-contain"
+                      priority={slideIndex === 0}
+                    />
+                  </motion.div>
+                </AnimatePresence>
 
-              {/* Barre de fausse navigation */}
-              <div className="flex items-center gap-2 bg-gray-900 px-4 py-3">
-                <span className="h-3 w-3 rounded-full bg-red-400/80" />
-                <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
-                <span className="h-3 w-3 rounded-full bg-green-400/80" />
-                <div className="ml-4 flex-1 rounded-md bg-gray-700/60 h-5 max-w-[200px]" />
+                {/* Flèches de navigation */}
+                <button
+                  type="button"
+                  aria-label="Image précédente"
+                  onClick={goPrev}
+                  className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-dark shadow-lg ring-1 ring-black/5 transition hover:bg-primary hover:text-white"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Image suivante"
+                  onClick={goNext}
+                  className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-dark shadow-lg ring-1 ring-black/5 transition hover:bg-primary hover:text-white"
+                >
+                  <ChevronRight size={20} />
+                </button>
               </div>
 
-              {/* Zone vidéo */}
-              <div className="relative aspect-video bg-[#0f1c3f]">
-                <video
-                  src={DEMO_VIDEO_URL}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+              {/* Indicateurs */}
+              <div className="mt-4 flex shrink-0 justify-center gap-2">
+                {DEMO_SLIDES.map((slide, i) => (
+                  <button
+                    key={slide.src}
+                    type="button"
+                    aria-label={`Afficher l'écran ${i + 1}`}
+                    aria-current={i === slideIndex}
+                    onClick={() => goTo(i)}
+                    className={`h-2 rounded-full transition-all ${
+                      i === slideIndex
+                        ? "w-6 bg-primary"
+                        : "w-2 bg-primary/30 hover:bg-primary/50"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </motion.div>
@@ -108,20 +189,22 @@ export function HeroSection() {
 
       <DemoBookingModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
 
-      {/* Scroll indicator */}
-      <motion.div
+      {/* Scroll indicator — ancré en bas du premier viewport */}
+      <motion.a
+        href="#contenu"
+        aria-label="Voir le contenu ci-dessous"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="relative z-10 flex justify-center pb-8"
+        transition={{ delay: 1 }}
+        className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 flex flex-col items-center gap-1 text-primary/70 hover:text-primary transition-colors"
       >
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
         >
-          <ChevronDown size={24} className="text-muted/40" />
+          <ChevronDown size={40} strokeWidth={2.5} />
         </motion.div>
-      </motion.div>
+      </motion.a>
 
     </section>
   );

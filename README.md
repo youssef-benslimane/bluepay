@@ -1,4 +1,4 @@
-# BluePay — Site Vitrine
+# BluePay - Site Vitrine
 
 Site web vitrine professionnel pour **BluePay**, la solution SaaS de gestion de la paie marocaine.
 
@@ -25,7 +25,7 @@ Site web vitrine professionnel pour **BluePay**, la solution SaaS de gestion de 
 
 | Route | Description |
 |---|---|
-| `/` | Accueil — Hero, Fonctionnalités, Avantages, CTA |
+| `/` | Accueil - Hero, Fonctionnalités, Avantages, CTA |
 | `/solutions` | Modes de déploiement SaaS & On-Premise |
 | `/pricing` | Offres tarifaires (Starter, Business, Enterprise) |
 | `/simulateur` | Simulateur de paie Brut→Net & Net→Brut |
@@ -38,7 +38,7 @@ Site web vitrine professionnel pour **BluePay**, la solution SaaS de gestion de 
 ```
 src/
 ├── app/                  # Routes Next.js App Router + metadata SEO
-│   ├── api/contact/      # Route Handler — envoi formulaire contact
+│   ├── api/contact/      # Route Handler - envoi formulaire contact
 │   ├── solutions/        # Page /solutions
 │   ├── pricing/          # Page /pricing
 │   ├── simulateur/       # Page /simulateur
@@ -113,7 +113,7 @@ Palette de couleurs définie dans `src/app/globals.css` via `@theme` Tailwind v4
 
 ---
 
-## Simulateur de Paie — Architecture
+## Simulateur de Paie - Architecture
 
 Le simulateur est conçu pour un branchement facile avec le moteur réel BluePay :
 
@@ -144,7 +144,7 @@ npm start
 
 ---
 
-## Déploiement — Ubuntu + Nginx + PM2
+## Déploiement - Ubuntu + Nginx + PM2
 
 ### 1. Prérequis serveur
 
@@ -291,4 +291,4 @@ chore: update dependencies
 
 ## Licence
 
-Propriétaire — © 2024 BluePay. Tous droits réservés.
+Propriétaire - © 2024 BluePay. Tous droits réservés.

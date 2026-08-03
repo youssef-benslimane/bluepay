@@ -5,14 +5,13 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: "essentiel",
     name: "Essentiel",
     tagline: "Idéal pour les petites entreprises",
-    basePrice: 1000,
+    basePrice: 990,
     perSalaryPrice: 100,
-    priceLabel: "1 000 DH HT / mois",
+    priceLabel: "990 DH HT / mois",
     maxSalaries: "Jusqu'à 20 salariés",
     features: [
       "Gestion des dossiers des salariés",
       "Gestion de la paie mensuelle",
-      "Calcul CNSS, AMO, CIMR, IR",
       "Édition des bulletins de paie PDF",
       "Déclarations sociales",
       "Historisation complète",
@@ -29,9 +28,9 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: "business",
     name: "Business",
     tagline: "Pour les PME en croissance",
-    basePrice: 5000,
+    basePrice: 4900,
     perSalaryPrice: 80,
-    priceLabel: "5 000 DH HT / mois",
+    priceLabel: "4 900 DH HT / mois",
     maxSalaries: "Jusqu'à 100 salariés",
     features: [
       "Tout Essentiel inclus",
@@ -70,11 +69,34 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
 ];
 
+export const CABINET_LICENCE = {
+  oneShotPrice: 39900,
+  oneShotLabel: "39 900 DH HT",
+  roles: [
+    { id: "rh", label: "RH", price: 490 },
+    { id: "configurateur", label: "Configurateur", price: 490 },
+    { id: "administrateur", label: "Administrateur", price: 490 },
+    { id: "employe", label: "Employé", price: 199 },
+  ],
+  features: [
+    "Licence logicielle complète BluePay",
+    "Ressources gérées par le cabinet",
+    "Mises à jour réglementaires incluses",
+    "Support technique dédié",
+    "Formation à l'utilisation",
+  ],
+};
+
 export const PRICING_FAQ = [
   {
     question: "Comment sont calculés les prix ?",
     answer:
-      "Les tarifs BluePay sont proposés sur devis personnalisé selon le nombre de salariés, les fonctionnalités souhaitées et le mode de déploiement. Contactez-nous pour obtenir une proposition adaptée à votre entreprise.",
+      "Les tarifs BluePay sont proposés selon le mode d'accès choisi : BPO (ressources BlueTalent) ou licence cabinet. Contactez-nous pour obtenir une proposition adaptée à votre structure.",
+  },
+  {
+    question: "Quelle est la différence entre BPO et Cabinet Comptables ?",
+    answer:
+      "En mode BPO, toutes les ressources sont du côté BlueTalent : vous bénéficiez d'un abonnement mensuel tout compris. En mode Cabinet Comptables, vous achetez une licence one-shot et gérez la solution avec vos propres ressources, avec une licence annuelle par rôle (RH, Configurateur, Administrateur, Employé).",
   },
   {
     question: "Puis-je changer d'offre en cours d'abonnement ?",

@@ -8,7 +8,7 @@ export function softwareApplicationJsonLd() {
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description:
-      "Solution SaaS de gestion de la paie marocaine — CNSS, AMO, IR, bulletins automatisés.",
+      "Solution SaaS de gestion de la paie marocaine - CNSS, AMO, IR, bulletins automatisés.",
     url: SITE_CONFIG.url,
     offers: {
       "@type": "Offer",
@@ -57,7 +57,7 @@ export function organizationJsonLd() {
       addressLocality: "Casablanca",
     },
     description:
-      "Éditeur de logiciel de gestion de la paie marocaine — solution SaaS et On-Premise.",
+      "Éditeur de logiciel de gestion de la paie marocaine - solution SaaS et On-Premise.",
     sameAs: [SITE_CONFIG.social.linkedin],
   };
 }

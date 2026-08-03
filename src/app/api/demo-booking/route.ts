@@ -16,7 +16,7 @@ const bookingSchema = z.object({
   recaptchaToken: z.string().optional(),
 });
 
-// Lazy import Prisma — n'échoue pas si SQLite n'est pas disponible
+// Lazy import Prisma - n'échoue pas si SQLite n'est pas disponible
 async function tryGetPrisma() {
   try {
     const { prisma } = await import("@/lib/prisma");
@@ -47,14 +47,14 @@ async function sendEmails(
       from: internalFromAddress("BluePay Démos"),
       to: "contact@bluepay.ma",
       replyTo: data.email,
-      subject: `Nouvelle demo — ${dateFormatted} a ${data.heure}`,
+      subject: `Nouvelle demo - ${dateFormatted} a ${data.heure}`,
       html: `
         <h2 style="color:#1a6bcc">Nouvelle réservation de démo</h2>
         <table style="border-collapse:collapse;width:100%;font-family:sans-serif">
           <tr><td style="padding:8px;font-weight:bold">Nom</td><td style="padding:8px">${fullName}</td></tr>
           <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Email</td><td style="padding:8px"><a href="mailto:${data.email}">${data.email}</a></td></tr>
           <tr><td style="padding:8px;font-weight:bold">Téléphone</td><td style="padding:8px">${data.telephone}</td></tr>
-          <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Société</td><td style="padding:8px">${data.societe ?? "—"}</td></tr>
+          <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Société</td><td style="padding:8px">${data.societe ?? "-"}</td></tr>
           <tr><td style="padding:8px;font-weight:bold">Date</td><td style="padding:8px">${dateFormatted}</td></tr>
           <tr style="background:#f5f5f5"><td style="padding:8px;font-weight:bold">Heure</td><td style="padding:8px">${data.heure}</td></tr>
         </table>
@@ -65,8 +65,8 @@ async function sendEmails(
       from: noreplyFromAddress("BluePay"),
       to: data.email,
       replyTo: "contact@bluepay.ma",
-      subject: `Confirmation demo BluePay — ${dateFormatted} a ${data.heure}`,
-      text: `Bonjour ${fullName},\n\nVotre demonstration BluePay est confirmee le ${dateFormatted} a ${data.heure} (30 min).\n\nAjouter a votre agenda :\nGoogle Calendar : ${calendar.google}\nOutlook : ${calendar.outlook}\n\nBluePay — contact@bluepay.ma`,
+      subject: `Confirmation demo BluePay - ${dateFormatted} a ${data.heure}`,
+      text: `Bonjour ${fullName},\n\nVotre demonstration BluePay est confirmee le ${dateFormatted} a ${data.heure} (30 min).\n\nAjouter a votre agenda :\nGoogle Calendar : ${calendar.google}\nOutlook : ${calendar.outlook}\n\nBluePay - contact@bluepay.ma`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:auto">
           <h2 style="color:#1a6bcc">Votre démo est confirmée !</h2>

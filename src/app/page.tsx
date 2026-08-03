@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "SaaS paie",
   ],
   openGraph: {
-    title: "BluePay — Logiciel de Paie Marocain",
+    title: "BluePay - Logiciel de Paie Marocain",
     description:
       " de gestion de la paie pour PME marocaines. CNSS, AMO, IR automatisés.",
     images: [{ url: "/og/home.png", width: 1200, height: 630 }],
@@ -44,8 +44,10 @@ export default function HomePage() {
         }}
       />
       <HeroSection />
-      <ScrollingInfographics />
-      <RolesSection />
+      <div id="contenu">
+        <ScrollingInfographics />
+        <RolesSection />
+      </div>
     </>
   );
 }

@@ -3,7 +3,7 @@ import { PageHero } from "@/features/shared/PageHero";
 import { FeaturesSection } from "@/features/home/FeaturesSection";
 
 export const metadata: Metadata = {
-  title: "Fonctionnalités — BluePay",
+  title: "Fonctionnalités - BluePay",
   description:
     "Découvrez toutes les fonctionnalités de BluePay : gestion de la paie, CNSS, AMO, IR, bulletins, déclarations sociales et plus encore.",
   openGraph: {
