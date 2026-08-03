@@ -11,7 +11,7 @@ const SLIDE_INTERVAL_MS = 5000;
 
 const DEMO_SLIDES = [
   {
-    src: "/images/demo-slides/01-documents.png",
+    src: "/images/demo-slides/01-documents-v2.png",
     alt: "Validation des demandes de documents — BluePay",
   },
   {
