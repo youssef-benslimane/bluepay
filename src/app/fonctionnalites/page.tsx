@@ -18,7 +18,6 @@ export default function FonctionnalitesPage() {
   return (
     <>
       <PageHero
-        badge="Fonctionnalités"
         title="Tout ce dont vous avez besoin"
         subtitle="Un moteur de paie complet intégrant toutes les spécificités de la réglementation marocaine."
       />

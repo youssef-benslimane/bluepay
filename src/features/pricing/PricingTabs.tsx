@@ -9,23 +9,25 @@ import { PricingCard } from "./PricingCard";
 import { PricingContactModal } from "./PricingContactModal";
 import { PRICING_PLANS, CABINET_LICENCE } from "@/data/pricing";
 
-type PricingTab = "bpo" | "cabinet";
+type PricingTab = "externe" | "interne";
 
 const TABS = [
   {
-    id: "bpo" as const,
-    label: "BPO",
-    description: "Toutes les ressources sont du côté BlueTalent - abonnement mensuel tout compris.",
+    id: "externe" as const,
+    label: "Gestion externe",
+    description:
+      "Gestion externe par l'équipe BluePay (Entreprise/PME).",
   },
   {
-    id: "cabinet" as const,
-    label: "Cabinets Comptables",
-    description: "Les ressources sont gérées par le cabinet - vente par licence one-shot.",
+    id: "interne" as const,
+    label: "Gestion interne",
+    description:
+      "Gestion interne par votre personnel (Cabinet comptable).",
   },
 ];
 
 export function PricingTabs() {
-  const [activeTab, setActiveTab] = useState<PricingTab>("bpo");
+  const [activeTab, setActiveTab] = useState<PricingTab>("externe");
   const [modalOpen, setModalOpen] = useState(false);
   const current = TABS.find((t) => t.id === activeTab)!;
 
@@ -55,9 +57,11 @@ export function PricingTabs() {
         </div>
       </div>
 
-      <p className="text-center text-sm text-muted max-w-xl mx-auto">
-        {current.description}
-      </p>
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-sm text-muted leading-relaxed">
+          {current.description}
+        </p>
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -67,7 +71,7 @@ export function PricingTabs() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.3 }}
         >
-          {activeTab === "bpo" ? (
+          {activeTab === "externe" ? (
             <>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8 md:items-stretch">
                 {PRICING_PLANS.map((plan, i) => (
@@ -103,7 +107,7 @@ function CabinetLicenceCard({ onCta }: { onCta: () => void }) {
             <KeyRound size={22} className="text-primary" />
           </div>
         </div>
-        <h3 className="text-xl font-bold text-dark">Vente par licence (One shot)</h3>
+        <h3 className="text-xl font-bold text-dark">Vente par licence</h3>
         <p className="text-sm text-muted">
           Solution BluePay destinée aux cabinets comptables - ressources gérées par le cabinet.
         </p>
@@ -113,7 +117,7 @@ function CabinetLicenceCard({ onCta }: { onCta: () => void }) {
         <div className="rounded-xl border border-border bg-surface/60 p-5 sm:col-span-2">
           <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted">
             <Building2 size={14} className="text-primary" />
-            Licence one-shot
+            Prix de la licence
           </div>
           <div className="text-3xl font-bold text-dark">
             {CABINET_LICENCE.oneShotPrice.toLocaleString("fr-MA")} DH

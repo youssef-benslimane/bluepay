@@ -124,7 +124,7 @@ export function HeroSection() {
             className="hidden lg:flex h-full min-h-screen items-center px-8 sm:px-12 lg:px-16 xl:px-24 pt-28 pb-16"
           >
             <div className="relative flex h-[calc(100svh-11rem)] w-full flex-col">
-              <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-[#e8eef5] shadow-2xl ring-1 ring-black/5">
+              <div className="relative min-h-0 flex-1 overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={slideIndex}

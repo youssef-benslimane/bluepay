@@ -76,7 +76,7 @@ export const CABINET_LICENCE = {
     { id: "rh", label: "RH", price: 490 },
     { id: "configurateur", label: "Configurateur", price: 490 },
     { id: "administrateur", label: "Administrateur", price: 490 },
-    { id: "employe", label: "Employé", price: 199 },
+    { id: "employe", label: "Employé", price: 99 },
   ],
   features: [
     "Licence logicielle complète BluePay",
@@ -91,12 +91,12 @@ export const PRICING_FAQ = [
   {
     question: "Comment sont calculés les prix ?",
     answer:
-      "Les tarifs BluePay sont proposés selon le mode d'accès choisi : BPO (ressources BlueTalent) ou licence cabinet. Contactez-nous pour obtenir une proposition adaptée à votre structure.",
+      "Les offres BluePay sont proposées selon le mode de gestion choisi : gestion externe (équipe BluePay) ou gestion interne (licence cabinet). Contactez-nous pour obtenir une proposition adaptée à votre structure.",
   },
   {
-    question: "Quelle est la différence entre BPO et Cabinet Comptables ?",
+    question: "Quelle est la différence entre gestion externe et gestion interne ?",
     answer:
-      "En mode BPO, toutes les ressources sont du côté BlueTalent : vous bénéficiez d'un abonnement mensuel tout compris. En mode Cabinet Comptables, vous achetez une licence one-shot et gérez la solution avec vos propres ressources, avec une licence annuelle par rôle (RH, Configurateur, Administrateur, Employé).",
+      "En gestion externe, toutes les ressources sont du côté BluePay : vous bénéficiez d'un abonnement mensuel tout compris. En gestion interne, vous achetez une licence et gérez la solution avec votre personnel, avec une licence annuelle par rôle (RH, Configurateur, Administrateur, Employé).",
   },
   {
     question: "Puis-je changer d'offre en cours d'abonnement ?",

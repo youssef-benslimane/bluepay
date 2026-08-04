@@ -23,7 +23,7 @@ export function PricingFAQ() {
           <SectionTitle
             badge="FAQ"
             title="Questions fréquentes"
-            subtitle="Tout ce que vous devez savoir sur nos offres et notre modèle de tarification."
+            subtitle="Tout ce que vous devez savoir sur nos offres et notre modèle de gestion."
           />
         </motion.div>
 

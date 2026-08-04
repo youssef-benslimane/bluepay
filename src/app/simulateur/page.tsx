@@ -19,7 +19,6 @@ export default function SimulateurPage() {
   return (
     <>
       <PageHero
-        badge="Simulateur"
         title="Simulateur de paie"
         subtitle="Estimez votre salaire net ou calculez le brut correspondant. Simulation basée sur les taux CNSS, AMO et le barème IR marocain en vigueur."
       />

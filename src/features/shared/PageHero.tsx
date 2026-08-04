@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 import { Container } from "@/components/layout/Container";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +14,7 @@ interface Breadcrumb {
 
 interface PageHeroProps {
   badge?: string;
-  title: string;
+  title: ReactNode;
   subtitle?: string;
   breadcrumbs?: Breadcrumb[];
   className?: string;
